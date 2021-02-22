@@ -1,0 +1,2 @@
+[X] Detect when virtual desktop changes
+[ ] Show virtual desktop indicator briefly upon change
