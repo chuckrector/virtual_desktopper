@@ -1,145 +1,159 @@
-#include <stdint.h>
-#include <strsafe.h>
+#include <strsafe.h> // StringCbPrintf
 #include <windows.h>
 
 #include "virtual_desktopper.h"
 
-typedef uint8_t u8;
-typedef uint16_t u16;
-typedef uint32_t u32;
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
 typedef bool b32;
 
 #define global_variable static
 #define internal static
 
-global_variable bool GlobalRunning;
+global_variable HANDLE GlobalTimer;
+global_variable HFONT GlobalFont;
+global_variable HWND GlobalWindow;
+global_variable IApplicationViewCollection *GlobalApplicationViewCollection;
+global_variable int GlobalCurrentVirtualDesktopIndex;
+global_variable IVirtualDesktopManagerInternal10536 *GlobalVirtualDesktopManagerInternal;
+global_variable IVirtualDesktopPinnedApps *GlobalVirtualDesktopPinnedApps;
 
 LRESULT CALLBACK
 MainWindowCallback(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 {
     LRESULT Result = 0;
 
-    switch (Message)
+    switch(Message)
     {
+        case WM_PAINT:
+        {
+            PAINTSTRUCT PaintStruct;
+            HDC DeviceContext = BeginPaint(Window, &PaintStruct);
+
+            RECT ClientRect;
+            GetClientRect(Window, &ClientRect);
+            FillRect(DeviceContext, &ClientRect, (HBRUSH)GetStockObject(BLACK_PEN));
+
+            char Text[MAX_PATH];
+            StringCbPrintf(Text, MAX_PATH, "%d", 1 + GlobalCurrentVirtualDesktopIndex);
+            int TextLength = (int)strlen(Text);
+
+            SelectObject(DeviceContext, GlobalFont);
+            SetTextColor(DeviceContext, RGB(255, 255, 255));
+            SetBkColor(DeviceContext, RGB(0, 0, 0));
+            DrawText(DeviceContext, Text, TextLength, &ClientRect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+
+            EndPaint(Window, &PaintStruct);
+            break;
+        }
         default:
         {
             Result = DefWindowProc(Window, Message, WParam, LParam);
             break;
         }
-        case WM_ACTIVATEAPP:
-        {
-            OutputDebugString("WM_ACTIVATEAPP\n");
-            break;
-        }
-        case WM_CLOSE:
-        {
-            GlobalRunning = false;
-            break;
-        }
-        case WM_PAINT:
-        {
-            PAINTSTRUCT Paint;
-            HDC DeviceContext = BeginPaint(Window, &Paint);
-
-            EndPaint(Window, &Paint);
-
-            break;
-        }
     }
 
-    return (Result);
+    return(Result);
 }
 
-BOOL CALLBACK
-EnumWindowsProc(HWND Window, LPARAM LParam)
+internal int
+Win32GetVirtualDesktopCount()
 {
-    if (IsWindowVisible(Window))
+    UINT Result = 1;
+
+    IObjectArray *ObjectArray = 0;
+    if(SUCCEEDED(GlobalVirtualDesktopManagerInternal->GetDesktops(&ObjectArray)))
     {
-        char WindowText[MAX_PATH];
-        GetWindowText(Window, WindowText, MAX_PATH - 1);
-
-        char LogText[MAX_PATH];
-        StringCbPrintf(LogText, MAX_PATH, "%s\n", WindowText);
-        OutputDebugString(LogText);
+        ObjectArray->GetCount(&Result);
+        ObjectArray->Release();
     }
 
-    return TRUE;
+    return(Result);
 }
 
-struct IApplicationView;
-
-MIDL_INTERFACE("FF72FFDD-BE7E-43FC-9C03-AD81681E88E4")
-IVirtualDesktop : public IUnknown
+internal int
+Win32GetVirtualDesktopIndexByID(GUID VirtualDesktopID)
 {
-    virtual HRESULT STDMETHODCALLTYPE IsViewVisible(IApplicationView *pView, int *pfVisible) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetID(GUID *pGuid) = 0;
-};
+    int Result = -1;
+    IObjectArray *ObjectArray = 0;
 
-// extern "C" const IID IID_IVirtualDesktop;
+    if(SUCCEEDED(GlobalVirtualDesktopManagerInternal->GetDesktops(&ObjectArray)))
+    {
+        UINT Count;
+        if(SUCCEEDED(ObjectArray->GetCount(&Count)))
+        {
+            for(UINT Index = 0;
+                Index < Count;
+                ++Index)
+            {
+                IVirtualDesktop *Desktop = 0;
+                if(FAILED(ObjectArray->GetAt(Index, __uuidof(IVirtualDesktop), (void **)&Desktop)))
+                {
+                    continue;
+                }
 
-// MIDL_INTERFACE("FF72FFDD-BE7E-43FC-9C03-AD81681E88E4")
-// IVirtualDesktop : public IUnknown
-// {
-//     virtual HRESULT STDMETHODCALLTYPE IsViewVisible(
-//         IApplicationView * pView, int *pfVisible) = 0;
-//     virtual HRESULT STDMETHODCALLTYPE GetID(GUID * pGuid) = 0;
-// };
+                GUID ID = {0};
+                if(SUCCEEDED(Desktop->GetID(&ID)) && ID == VirtualDesktopID)
+                {
+                    Result = Index;
+                    Desktop->Release();
+                    break;
+                }
 
-// extern "C" const IID IID_IVirtualDesktopManagerInternal;
+                Desktop->Release();
+            }
+        }
 
-// struct IVirtualDesktopManagerInternal : public IUnknown
-// {
-//     virtual HRESULT STDMETHODCALLTYPE GetCount(UINT *pCount) = 0;
-//     virtual HRESULT STDMETHODCALLTYPE
-//     MoveViewToDesktop(IApplicationView *pView, IVirtualDesktop *pDesktop) =
-//     0;
-//     // 10240
-//     virtual HRESULT STDMETHODCALLTYPE CanViewMoveDesktops(
-//         IApplicationView *pView,
-//         int *pfCanViewMoveDesktops) = 0;
-//     virtual HRESULT STDMETHODCALLTYPE
-//     GetCurrentDesktop(IVirtualDesktop **desktop) = 0;
-//     virtual HRESULT STDMETHODCALLTYPE
-//     GetDesktops(IObjectArray **ppDesktops) = 0;
-//     virtual HRESULT STDMETHODCALLTYPE GetAdjacentDesktop(
-//         IVirtualDesktop *pDesktopReference,
-//         AdjacentDesktop uDirection,
-//         IVirtualDesktop **ppAdjacentDesktop) = 0;
-//     virtual HRESULT STDMETHODCALLTYPE
-//     SwitchDesktop(IVirtualDesktop *pDesktop) = 0;
-//     virtual HRESULT STDMETHODCALLTYPE
-//     CreateDesktopW(IVirtualDesktop **ppNewDesktop) = 0;
-//     virtual HRESULT STDMETHODCALLTYPE RemoveDesktop(
-//         IVirtualDesktop *pRemove,
-//         IVirtualDesktop *pFallbackDesktop) = 0;
-//     // 10240
-//     virtual HRESULT STDMETHODCALLTYPE
-//     FindDesktop(GUID *desktopId, IVirtualDesktop **ppDesktop) = 0;
-// };
-// // 10130
-// MIDL_INTERFACE("EF9F1A6C-D3CC-4358-B712-F84B635BEBE7")
-// IVirtualDesktopManagerInternal10130 : public
-// IVirtualDesktopManagerInternal{};
-// // 10240
-// MIDL_INTERFACE("AF8DA486-95BB-4460-B3B7-6E7A6B2962B5")
-// IVirtualDesktopManagerInternal10240 : public
-// IVirtualDesktopManagerInternal{};
-// // 10536
-// MIDL_INTERFACE("f31574d6-b682-4cdc-bd56-1827860abec6")
-// IVirtualDesktopManagerInternal10536 : public
-// IVirtualDesktopManagerInternal{};
+        ObjectArray->Release();
+    }
 
-// extern "C" const IID IID_IVirtualDesktopNotification;
-MIDL_INTERFACE("C179334C-4295-40D3-BEA1-C654D965605A")
-IVirtualDesktopNotification : public IUnknown
+    return(Result);
+}
+
+internal int
+Win32GetVirtualDesktopIndex(IVirtualDesktop *Desktop)
 {
-    virtual HRESULT STDMETHODCALLTYPE VirtualDesktopCreated(IVirtualDesktop *pDesktop) = 0;
-    virtual HRESULT STDMETHODCALLTYPE VirtualDesktopDestroyBegin(IVirtualDesktop *pDesktopDestroyed, IVirtualDesktop *pDesktopFallback) = 0;
-    virtual HRESULT STDMETHODCALLTYPE VirtualDesktopDestroyFailed(IVirtualDesktop *pDesktopDestroyed, IVirtualDesktop *pDesktopFallback) = 0;
-    virtual HRESULT STDMETHODCALLTYPE VirtualDesktopDestroyed(IVirtualDesktop *pDesktopDestroyed, IVirtualDesktop *pDesktopFallback) = 0;
-    virtual HRESULT STDMETHODCALLTYPE ViewVirtualDesktopChanged(IApplicationView *pView) = 0;
-    virtual HRESULT STDMETHODCALLTYPE CurrentVirtualDesktopChanged(IVirtualDesktop *OldDesktop, IVirtualDesktop *NewDesktop) = 0;
-};
+    int Result = -1;
+    GUID ID;
+
+    if(SUCCEEDED(Desktop->GetID(&ID)))
+    {
+        Result = Win32GetVirtualDesktopIndexByID(ID);
+    }
+
+    return(Result);
+}
+
+internal int
+Win32GetCurrentVirtualDesktopIndex()
+{
+    int Result;
+    IVirtualDesktop *Desktop;
+    GlobalVirtualDesktopManagerInternal->GetCurrentDesktop(&Desktop);
+    Result = Win32GetVirtualDesktopIndex(Desktop);
+    Desktop->Release();
+    return(Result);
+}
+
+internal void
+PinWindow(HWND Window)
+{
+    IApplicationView *ApplicationView = 0;
+    GlobalApplicationViewCollection->GetViewForHwnd(Window, &ApplicationView);
+
+    if(ApplicationView)
+    {
+        GlobalVirtualDesktopPinnedApps->PinView(ApplicationView);
+        ApplicationView->Release();
+    }
+}
+
+VOID CALLBACK HideWindowCallback(void *Parameter, BOOLEAN TimerOrWaitFired)
+{
+    // NOTE(chuck): Hiding unpins the window.
+    ShowWindow(GlobalWindow, SW_HIDE);
+}
 
 struct virtual_desktop_notification : IVirtualDesktopNotification
 {
@@ -150,23 +164,18 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
     {
         HRESULT Result;
         OutputDebugString("QueryInterface\n");
-        if (!Object)
+        if(!Object)
         {
-            OutputDebugString("  E_INVALIDARG\n");
             Result = E_INVALIDARG;
         }
         else
         {
-            char Buffer[MAX_PATH];
-            StringCbPrintf(Buffer, MAX_PATH, "  Interface identifier %x\n", InterfaceIdentifier);
-            OutputDebugString(Buffer);
             *Object = 0;
 
-            if (InterfaceIdentifier == IID_IUnknown ||
+            if(InterfaceIdentifier == IID_IUnknown ||
                 InterfaceIdentifier == IID_IVirtualDesktopNotification)
             {
-                // Increment the reference count and return the pointer.
-                *Object = (LPVOID)this;
+                *Object = (void *)this;
                 AddRef();
                 Result = S_OK;
             }
@@ -176,7 +185,7 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
             }
         }
 
-        return (Result);
+        return(Result);
     }
 
     virtual ULONG STDMETHODCALLTYPE
@@ -185,7 +194,7 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
         ULONG Result;
         OutputDebugString("AddRef\n");
         Result = InterlockedIncrement(&Count);
-        return (Result);
+        return(Result);
     }
 
     virtual ULONG STDMETHODCALLTYPE
@@ -196,12 +205,12 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
         OutputDebugString("Release\n");
 
         Result = InterlockedDecrement(&Count);
-        if (Result == 0)
+        if(Result == 0)
         {
             delete this;
         }
 
-        return (Result);
+        return(Result);
     }
 
     HRESULT
@@ -209,7 +218,7 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
     {
         HRESULT Result = S_OK;
         OutputDebugString("ViewVirtualDesktopChanged\n");
-        return (Result);
+        return(Result);
     }
 
     HRESULT
@@ -217,40 +226,17 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
     {
         HRESULT Result = S_OK;
 
-        OutputDebugString("CurrentVirtualDesktopChanged\n");
-        // // @TODO @PERF @FIXME .. how to get guid from IVirtualDesktp?
-        // IVirtualDesktop *pd[2] = {OldDesktop, NewDesktop};
-        // size_t idx[2] = {0};
-        // size_t found = 0;
-        // for (size_t i = 0; i < 2; ++i)
-        // {
-        //     for (size_t j = 0, je = m_vdm.m_desktops.size(); j < je; ++j)
-        //     {
-        //         IVirtualDesktop *ivd = nullptr;
-        //         GUID g = {0};
-        //         if (SUCCEEDED(
-        //                 m_vdm.m_vdmi->FindDesktop(&m_vdm.m_desktops[j],
-        //                 &ivd)))
-        //         {
-        //             scope_guard_t on_exit_ivd = mkScopeGuard(
-        //                 std::mem_fun(&IVirtualDesktop::Release), ivd);
-        //             if (ivd == pd[i])
-        //             {
-        //                 idx[i] = j;
-        //                 ++found;
-        //             }
-        //         }
-        //         else
-        //             return S_FALSE;
-        //     }
-        // }
-        // if (found == 2)
-        // {
-        //     bb::BlackBox::Instance().GetTasks().OnSwitchDesktopVDM(
-        //         m_vdm.m_ids[idx[0]], m_vdm.m_ids[idx[1]]);
-        //     bb::BlackBox::Instance().GetWorkSpaces().OnSwitchedDesktop();
-        // }
-        return (Result);
+        //.NOTE(chuck): Hiding unpins the window.
+        ShowWindow(GlobalWindow, SW_SHOW);
+        PinWindow(GlobalWindow);
+
+        GlobalCurrentVirtualDesktopIndex = Win32GetVirtualDesktopIndex(NewDesktop);
+        RedrawWindow(GlobalWindow, 0, 0, RDW_INVALIDATE);
+
+        DeleteTimerQueueTimer(0, GlobalTimer, 0);
+        CreateTimerQueueTimer(&GlobalTimer, 0, HideWindowCallback, 0, VIRTUAL_DESKTOP_NUMERAL_TIMEOUT, 0, WT_EXECUTEONLYONCE);
+
+        return(Result);
     }
 
     HRESULT
@@ -258,7 +244,7 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
     {
         HRESULT Result = S_OK;
         OutputDebugString("VirtualDesktopCreated\n");
-        return (Result);
+        return(Result);
     }
 
     HRESULT
@@ -266,7 +252,7 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
     {
         HRESULT Result = S_OK;
         OutputDebugString("VirtualDesktopDestroyBegin\n");
-        return (Result);
+        return(Result);
     }
 
     HRESULT
@@ -274,7 +260,7 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
     {
         HRESULT Result = S_OK;
         OutputDebugString("VirtualDesktopDestroyFailed\n");
-        return (Result);
+        return(Result);
     }
 
     HRESULT
@@ -282,16 +268,8 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
     {
         HRESULT Result = S_OK;
         OutputDebugString("VirtualDesktopDestroyed\n");
-        return (Result);
+        return(Result);
     }
-};
-
-extern "C" const IID IID_IVirtualDesktopNotificationService;
-MIDL_INTERFACE("0CD45E71-D927-4F15-8B0A-8FEF525337BF")
-IVirtualDesktopNotificationService : public IUnknown
-{
-    virtual HRESULT STDMETHODCALLTYPE Register(IVirtualDesktopNotification *pNotification, DWORD *Cookie) = 0;
-    virtual HRESULT STDMETHODCALLTYPE Unregister(DWORD Cookie) = 0;
 };
 
 internal b32
@@ -301,111 +279,140 @@ Win32InitVirtualDesktopNotifications()
 
     if (SUCCEEDED(CoInitializeEx(0, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE)))
     {
-        IServiceProvider *ServiceProvider = 0;
-        if (SUCCEEDED(CoCreateInstance(CLSID_ImmersiveShell, 0, CLSCTX_LOCAL_SERVER, __uuidof(IServiceProvider), (PVOID *)&ServiceProvider)))
+        OutputDebugString("CoInitializeEx SUCCESS\n");
+    }
+    else
+    {
+        OutputDebugString("CoInitializeEx failed\n");
+    }
+    IServiceProvider *ServiceProvider = 0;
+    if (SUCCEEDED(CoCreateInstance(CLSID_ImmersiveShell, 0, CLSCTX_LOCAL_SERVER, __uuidof(IServiceProvider), (void **)&ServiceProvider)))
+    {
+        OutputDebugString("CoCreateInstance SUCCESS\n");
+    }
+    else
+    {
+        OutputDebugString("CoCreateInstance failed\n");
+    }
+
+    IVirtualDesktopManager *VirtualDesktopManager = 0;
+    if(SUCCEEDED(ServiceProvider->QueryService(__uuidof(IVirtualDesktopManager), &VirtualDesktopManager)))
+    {
+        if(SUCCEEDED(ServiceProvider->QueryService(CLSID_VirtualDesktopAPI_Unknown, &GlobalVirtualDesktopManagerInternal)))
         {
-            IVirtualDesktopManager *VirtualDesktopManager = 0;
-            if (SUCCEEDED(ServiceProvider->QueryService(__uuidof(IVirtualDesktopManager), &VirtualDesktopManager)))
+            IVirtualDesktopNotificationService *NotificationService = 0;
+            if(SUCCEEDED(ServiceProvider->QueryService(CLSID_IVirtualNotificationService, &NotificationService)))
             {
-                // IVirtualDesktopManagerInternal10536 *VDM10536 = 0;
-                // if (SUCCEEDED(ServiceProvider->QueryService(
-                //         CLSID_VirtualDesktopAPI_Unknown, &VDM10536)))
-                // {
-                IVirtualDesktopNotificationService *NotificationService = 0;
-                if (SUCCEEDED(ServiceProvider->QueryService(CLSID_IVirtualNotificationService, &NotificationService)))
+                DWORD Cookie = 0;
+                virtual_desktop_notification *VirtualDesktopNotification = new virtual_desktop_notification();
+                if(SUCCEEDED(NotificationService->Register(VirtualDesktopNotification, &Cookie)))
                 {
-                    DWORD Cookie = 0;
-                    virtual_desktop_notification *VirtualDesktopNotification = new virtual_desktop_notification();
-                    if (SUCCEEDED(NotificationService->Register(VirtualDesktopNotification, &Cookie)))
+                    if(SUCCEEDED(ServiceProvider->QueryService(
+                        IID_IApplicationViewCollection,
+                        IID_IApplicationViewCollection,
+                        (void **)&GlobalApplicationViewCollection)))
                     {
-                        // EnumWindows(EnumWindowsProc, 0);
-                        Result = true;
+                        if(SUCCEEDED(ServiceProvider->QueryService(
+                            CLSID_VirtualDesktopPinnedApps,
+                            __uuidof(IVirtualDesktopPinnedApps),
+                            (void **)&GlobalVirtualDesktopPinnedApps)))
+                        {
+                            Result = true;
+
+                            int VirtualDesktopCount = Win32GetVirtualDesktopCount();
+
+                            char Buffer[MAX_PATH];
+                            StringCbPrintf(Buffer, MAX_PATH, "Virtual desktop count: %d\n", VirtualDesktopCount);
+                            OutputDebugString(Buffer);
+                        }
+                        else
+                        {
+                            OutputDebugString("VirtualDesktopPinnedApps was not created.\n");
+                        }
                     }
                     else
                     {
-                        OutputDebugString("GlobalVirtualDesktopNotification was not registered.\n");
+                        OutputDebugString("ApplicationViewCollection was not created.\n");
                     }
                 }
                 else
                 {
-                    OutputDebugString("NotificationService was not created.\n");
+                    OutputDebugString("GlobalVirtualDesktopNotification was not registered.\n");
                 }
-                // }
-                // else
-                // {
-                //     OutputDebugString(
-                //         "VirtualDesktopManager1030 was not created.\n");
-                // }
             }
             else
             {
-                OutputDebugString("VirtualDesktopManager was not created.\n");
+                OutputDebugString("NotificationService was not created.\n");
             }
         }
         else
         {
-            OutputDebugString("ServiceProvider was not created.\n");
+            OutputDebugString("VirtualDesktopManager1030 was not created.\n");
         }
     }
     else
     {
-        OutputDebugString("COM was not initialized.\n");
+        OutputDebugString("VirtualDesktopManager was not created.\n");
     }
 
-    return (Result);
+    return(Result);
 }
 
 int CALLBACK
-WinMain(
-    HINSTANCE Instance,
-    HINSTANCE PrevInstance,
-    LPSTR CommandLine,
-    int ShowCode)
+WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLine, int ShowCode)
 {
-    if (Win32InitVirtualDesktopNotifications())
+    if(Win32InitVirtualDesktopNotifications())
     {
-        WNDCLASSEX WindowClass = {};
-        WindowClass.cbSize = sizeof(WindowClass);
-        WindowClass.hInstance = Instance;
-        WindowClass.lpfnWndProc = MainWindowCallback;
-        WindowClass.lpszClassName = "VirtualDesktopperClassName";
+        GlobalCurrentVirtualDesktopIndex = Win32GetCurrentVirtualDesktopIndex();
+        CreateTimerQueueTimer(&GlobalTimer, 0, HideWindowCallback, 0, VIRTUAL_DESKTOP_NUMERAL_TIMEOUT, 0, WT_EXECUTEONLYONCE);
+    }
+    else
+    {
+        OutputDebugString("Failed to initialize virtual desktop notifications.\n");
+    }
 
-        if (RegisterClassEx(&WindowClass))
+    WNDCLASSEX WindowClass = {};
+    WindowClass.cbSize = sizeof(WNDCLASSEX);
+    WindowClass.hInstance = Instance;
+    WindowClass.lpfnWndProc = MainWindowCallback;
+    WindowClass.lpszClassName = "VirtualDesktopperClassName";
+
+    if(RegisterClassEx(&WindowClass))
+    {
+        int WindowWidth = 200;
+        int WindowHeight = 200;
+        GlobalWindow = CreateWindowEx(
+            WS_EX_TOPMOST,
+            WindowClass.lpszClassName, "Virtual Desktopper",
+            WS_POPUP | WS_VISIBLE,
+            3840/2 - WindowHeight/2, 2160/2 - WindowWidth/2, WindowWidth, WindowHeight,
+            0, 0, Instance, 0);
+
+        if(GlobalWindow)
         {
-            HWND Window = CreateWindowEx(
-                0, WindowClass.lpszClassName, "Virtual Desktopper",
-                WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-                3840 / 2 - 640, 2160 / 2 - 480, 640, 480,
-                0, 0, Instance, 0);
+            GlobalFont = CreateFont(
+                160, 0, 0, 0, FW_DONTCARE, 0, 0, 0, ANSI_CHARSET,
+                OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                DEFAULT_QUALITY, DEFAULT_PITCH,
+                "Arial");
+            PinWindow(GlobalWindow);
 
-            if (Window)
+            MSG Message;
+            while(GetMessage(&Message, 0, 0, 0))
             {
-                GlobalRunning = true;
-                while (GlobalRunning)
-                {
-                    MSG Message;
-                    while (PeekMessage(&Message, 0, 0, 0, PM_REMOVE))
-                    {
-                        TranslateMessage(&Message);
-                        DispatchMessageA(&Message);
-                    }
-                }
-            }
-            else
-            {
-                OutputDebugString("Failed to create window.\n");
+                TranslateMessage(&Message);
+                DispatchMessageA(&Message);
             }
         }
         else
         {
-            OutputDebugString("Failed to register window class.\n");
+            OutputDebugString("Failed to create window.\n");
         }
     }
     else
     {
-        OutputDebugString(
-            "Failed to initialize virtual desktop notifications.\n");
+        OutputDebugString("Failed to register window class.\n");
     }
 
-    return (0);
+    return(0);
 }
