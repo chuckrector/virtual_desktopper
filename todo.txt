@@ -2,4 +2,4 @@
 [X] Show virtual desktop # when switching desktops
 [X] Keep window on top of all windows across all virtual desktops
 [X] Remove window chrome and overlay virtual desktop # transparently
-[ ] Hide virtual desktop # after a timeout after each virtual desktop switch
+[X] Hide virtual desktop # after a timeout after each virtual desktop switch
