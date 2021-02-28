@@ -2,7 +2,6 @@
 #define VIRTUAL_DESKTOPPER_H
 
 #include <shobjidl.h>
-#include <unknwn.h>
 #include <inspectable.h>
 
 #define VIRTUAL_DESKTOP_NUMERAL_TIMEOUT 750
