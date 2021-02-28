@@ -8,7 +8,7 @@ global_variable int GlobalCurrentVirtualDesktopIndex;
 global_variable IVirtualDesktopManagerInternal *GlobalVirtualDesktopManagerInternal;
 global_variable IVirtualDesktopPinnedApps *GlobalVirtualDesktopPinnedApps;
 
-LRESULT CALLBACK
+LRESULT __stdcall
 MainWindowCallback(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 {
     LRESULT Result = 0;
@@ -138,7 +138,8 @@ PinWindow(HWND Window)
     }
 }
 
-VOID CALLBACK HideWindowCallback(void *Parameter, BOOLEAN TimerOrWaitFired)
+void __stdcall
+HideWindowCallback(void *Parameter, BOOLEAN TimerOrWaitFired)
 {
     // NOTE(chuck): Hiding unpins the window.
     ShowWindow(GlobalWindow, SW_HIDE);
@@ -337,7 +338,7 @@ Win32InitVirtualDesktopNotifications()
     return(Result);
 }
 
-int CALLBACK
+int __stdcall
 WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLine, int ShowCode)
 {
     if(Win32InitVirtualDesktopNotifications())
