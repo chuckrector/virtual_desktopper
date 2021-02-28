@@ -22,13 +22,6 @@ enum AdjacentDesktop
     RightDirection = 4
 };
 
-#define IAsyncCallback UINT
-#define IImmersiveMonitor UINT
-#define APPLICATION_VIEW_COMPATIBILITY_POLICY UINT
-#define IApplicationViewOperation UINT
-#define APPLICATION_VIEW_CLOAK_TYPE UINT
-#define IApplicationViewPosition UINT
-
 CLSID const CLSID_ImmersiveShell = {0xC2F03A33, 0x21F5, 0x47FA, 0xB4, 0xBB, 0x15, 0x63, 0x62, 0xA2, 0xF2, 0x39};
 CLSID const CLSID_IVirtualNotificationService = {0xA501FDEC, 0x4A09, 0x464C, 0xAE, 0x4E, 0x1B, 0x9C, 0x21, 0xB8, 0x49, 0x18};
 CLSID const CLSID_VirtualDesktopAPI_Unknown = {0xC5E0CDCA, 0x7B6E, 0x41B2, 0x9F, 0xC4, 0xD9, 0x39, 0x75, 0xCC, 0x46, 0x7B};
@@ -53,13 +46,13 @@ IApplicationView : public IInspectable
     // IApplicationView
     virtual HRESULT __stdcall SetFocus(void) = 0;
     virtual HRESULT __stdcall SwitchTo(void) = 0;
-    virtual HRESULT __stdcall TryInvokeBack(IAsyncCallback *) = 0; // Proc8
+    virtual HRESULT __stdcall TryInvokeBack(UINT *) = 0; // Proc8
     virtual HRESULT __stdcall GetThumbnailWindow(HWND *) = 0; // Proc9
-    virtual HRESULT __stdcall GetMonitor(IImmersiveMonitor **) = 0; // Proc10
+    virtual HRESULT __stdcall GetMonitor(UINT **) = 0; // Proc10
     virtual HRESULT __stdcall GetVisibility(int *) = 0; // Proc11
-    virtual HRESULT __stdcall SetCloak(APPLICATION_VIEW_CLOAK_TYPE, int) = 0; // Proc12
+    virtual HRESULT __stdcall SetCloak(UINT, int) = 0; // Proc12
     virtual HRESULT __stdcall GetPosition(REFIID, void **) = 0; // Proc13
-    virtual HRESULT __stdcall SetPosition(IApplicationViewPosition *) = 0; // Proc14
+    virtual HRESULT __stdcall SetPosition(UINT *) = 0; // Proc14
     virtual HRESULT __stdcall InsertAfterWindow(HWND) = 0; // Proc15
     virtual HRESULT __stdcall GetExtendedFramePosition(RECT *) = 0; // Proc16
     virtual HRESULT __stdcall GetAppUserModelId(PWSTR *) = 0; // Proc17
@@ -76,16 +69,16 @@ IApplicationView : public IInspectable
     virtual HRESULT __stdcall SetShowInSwitchers(int) = 0;
     virtual HRESULT __stdcall GetScaleFactor(int *) = 0;
     virtual HRESULT __stdcall CanReceiveInput(BOOL *) = 0;
-    virtual HRESULT __stdcall GetCompatibilityPolicyType(APPLICATION_VIEW_COMPATIBILITY_POLICY *) = 0;
-    virtual HRESULT __stdcall SetCompatibilityPolicyType(APPLICATION_VIEW_COMPATIBILITY_POLICY) = 0;
+    virtual HRESULT __stdcall GetCompatibilityPolicyType(UINT *) = 0;
+    virtual HRESULT __stdcall SetCompatibilityPolicyType(UINT) = 0;
     //virtual HRESULT __stdcall GetPositionPriority(IShellPositionerPriority**) = 0; // removed in 1803
     //virtual HRESULT __stdcall SetPositionPriority(IShellPositionerPriority*) = 0; // removed in 1803
-    virtual HRESULT __stdcall GetSizeConstraints(IImmersiveMonitor *, SIZE *, SIZE *) = 0;
+    virtual HRESULT __stdcall GetSizeConstraints(UINT *, SIZE *, SIZE *) = 0;
     virtual HRESULT __stdcall GetSizeConstraintsForDpi(UINT, SIZE *, SIZE *) = 0;
     virtual HRESULT __stdcall SetSizeConstraintsForDpi(const UINT *, const SIZE *, const SIZE *) = 0;
     //virtual HRESULT __stdcall QuerySizeConstraintsFromApp(void) = 0; // removed in 1803
     virtual HRESULT __stdcall OnMinSizePreferencesUpdated(HWND) = 0;
-    virtual HRESULT __stdcall ApplyOperation(IApplicationViewOperation*) = 0;
+    virtual HRESULT __stdcall ApplyOperation(UINT*) = 0;
     virtual HRESULT __stdcall IsTray(BOOL *) = 0;
     virtual HRESULT __stdcall IsInHighZOrderBand(BOOL *) = 0;
     virtual HRESULT __stdcall IsSplashScreenPresented(BOOL *) = 0;
