@@ -162,8 +162,8 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
         {
             *Object = 0;
 
-            if(InterfaceIdentifier == IID_IUnknown ||
-                InterfaceIdentifier == IID_IVirtualDesktopNotification)
+            if((InterfaceIdentifier == IID_IUnknown) ||
+               (InterfaceIdentifier == IID_IVirtualDesktopNotification))
             {
                 *Object = (void *)this;
                 AddRef();
