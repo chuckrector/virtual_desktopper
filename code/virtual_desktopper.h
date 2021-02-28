@@ -32,73 +32,73 @@ struct __declspec(novtable uuid("372E1D3B-38D3-42E4-A15B-8AB2B178F513"))
 IApplicationView : public IInspectable
 {
     // IUnknown methods
-    virtual __declspec(nothrow) HRESULT __stdcall QueryInterface(const IID &InterfaceID, LPVOID *Object) = 0;
-    virtual __declspec(nothrow) ULONG __stdcall AddRef(void) = 0;
-    virtual __declspec(nothrow) ULONG __stdcall Release(void) = 0;
+    virtual HRESULT __stdcall QueryInterface(const IID &InterfaceID, LPVOID *Object) = 0;
+    virtual ULONG __stdcall AddRef(void) = 0;
+    virtual ULONG __stdcall Release(void) = 0;
 
     // IInspectable methods
-    virtual __declspec(nothrow) HRESULT __stdcall GetIids(ULONG *Count, IID **InterfaceIDList) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall GetRuntimeClassName(HSTRING *ClassName) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall GetTrustLevel(TrustLevel *Level) = 0;
+    virtual HRESULT __stdcall GetIids(ULONG *Count, IID **InterfaceIDList) = 0;
+    virtual HRESULT __stdcall GetRuntimeClassName(HSTRING *ClassName) = 0;
+    virtual HRESULT __stdcall GetTrustLevel(TrustLevel *Level) = 0;
 
     // IApplicationView methods
-    virtual __declspec(nothrow) HRESULT __stdcall SetFocus(void) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall SwitchTo(void) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall TryInvokeBack(IAsyncCallback *) = 0; // Proc8
-    virtual __declspec(nothrow) HRESULT __stdcall GetThumbnailWindow(HWND *) = 0; // Proc9
-    virtual __declspec(nothrow) HRESULT __stdcall GetMonitor(IImmersiveMonitor **) = 0; // Proc10
-    virtual __declspec(nothrow) HRESULT __stdcall GetVisibility(int *) = 0; // Proc11
-    virtual __declspec(nothrow) HRESULT __stdcall SetCloak(APPLICATION_VIEW_CLOAK_TYPE, int) = 0; // Proc12
-    virtual __declspec(nothrow) HRESULT __stdcall GetPosition(REFIID, void **) = 0; // Proc13
-    virtual __declspec(nothrow) HRESULT __stdcall SetPosition(IApplicationViewPosition *) = 0; // Proc14
-    virtual __declspec(nothrow) HRESULT __stdcall InsertAfterWindow(HWND) = 0; // Proc15
-    virtual __declspec(nothrow) HRESULT __stdcall GetExtendedFramePosition(RECT *) = 0; // Proc16
-    virtual __declspec(nothrow) HRESULT __stdcall GetAppUserModelId(PWSTR *) = 0; // Proc17
-    virtual __declspec(nothrow) HRESULT __stdcall SetAppUserModelId(PCWSTR) = 0; // Proc18
-    virtual __declspec(nothrow) HRESULT __stdcall IsEqualByAppUserModelId(PCWSTR, int *) = 0; // Proc19
-    virtual __declspec(nothrow) HRESULT __stdcall GetViewState(UINT *) = 0; // Proc20
-    virtual __declspec(nothrow) HRESULT __stdcall SetViewState(UINT) = 0; // Proc21
-    virtual __declspec(nothrow) HRESULT __stdcall GetNeediness(int *) = 0; // Proc22
-    virtual __declspec(nothrow) HRESULT __stdcall GetLastActivationTimestamp(ULONGLONG *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall SetLastActivationTimestamp(ULONGLONG) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall GetVirtualDesktopId(GUID *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall SetVirtualDesktopId(REFGUID) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall GetShowInSwitchers(int *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall SetShowInSwitchers(int) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall GetScaleFactor(int *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall CanReceiveInput(BOOL *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall GetCompatibilityPolicyType(APPLICATION_VIEW_COMPATIBILITY_POLICY *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall SetCompatibilityPolicyType(APPLICATION_VIEW_COMPATIBILITY_POLICY) = 0;
-    //virtual __declspec(nothrow) HRESULT __stdcall GetPositionPriority(IShellPositionerPriority**) = 0; // removed in 1803
-    //virtual __declspec(nothrow) HRESULT __stdcall SetPositionPriority(IShellPositionerPriority*) = 0; // removed in 1803
-    virtual __declspec(nothrow) HRESULT __stdcall GetSizeConstraints(IImmersiveMonitor *, SIZE *, SIZE *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall GetSizeConstraintsForDpi(UINT, SIZE *, SIZE *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall SetSizeConstraintsForDpi(const UINT *, const SIZE *, const SIZE *) = 0;
-    //virtual __declspec(nothrow) HRESULT __stdcall QuerySizeConstraintsFromApp(void) = 0; // removed in 1803
-    virtual __declspec(nothrow) HRESULT __stdcall OnMinSizePreferencesUpdated(HWND) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall ApplyOperation(IApplicationViewOperation*) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall IsTray(BOOL *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall IsInHighZOrderBand(BOOL *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall IsSplashScreenPresented(BOOL *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall Flash(void) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall GetRootSwitchableOwner(IApplicationView **) = 0; // proc45
-    virtual __declspec(nothrow) HRESULT __stdcall EnumerateOwnershipTree(IObjectArray **) = 0; // proc46
+    virtual HRESULT __stdcall SetFocus(void) = 0;
+    virtual HRESULT __stdcall SwitchTo(void) = 0;
+    virtual HRESULT __stdcall TryInvokeBack(IAsyncCallback *) = 0; // Proc8
+    virtual HRESULT __stdcall GetThumbnailWindow(HWND *) = 0; // Proc9
+    virtual HRESULT __stdcall GetMonitor(IImmersiveMonitor **) = 0; // Proc10
+    virtual HRESULT __stdcall GetVisibility(int *) = 0; // Proc11
+    virtual HRESULT __stdcall SetCloak(APPLICATION_VIEW_CLOAK_TYPE, int) = 0; // Proc12
+    virtual HRESULT __stdcall GetPosition(REFIID, void **) = 0; // Proc13
+    virtual HRESULT __stdcall SetPosition(IApplicationViewPosition *) = 0; // Proc14
+    virtual HRESULT __stdcall InsertAfterWindow(HWND) = 0; // Proc15
+    virtual HRESULT __stdcall GetExtendedFramePosition(RECT *) = 0; // Proc16
+    virtual HRESULT __stdcall GetAppUserModelId(PWSTR *) = 0; // Proc17
+    virtual HRESULT __stdcall SetAppUserModelId(PCWSTR) = 0; // Proc18
+    virtual HRESULT __stdcall IsEqualByAppUserModelId(PCWSTR, int *) = 0; // Proc19
+    virtual HRESULT __stdcall GetViewState(UINT *) = 0; // Proc20
+    virtual HRESULT __stdcall SetViewState(UINT) = 0; // Proc21
+    virtual HRESULT __stdcall GetNeediness(int *) = 0; // Proc22
+    virtual HRESULT __stdcall GetLastActivationTimestamp(ULONGLONG *) = 0;
+    virtual HRESULT __stdcall SetLastActivationTimestamp(ULONGLONG) = 0;
+    virtual HRESULT __stdcall GetVirtualDesktopId(GUID *) = 0;
+    virtual HRESULT __stdcall SetVirtualDesktopId(REFGUID) = 0;
+    virtual HRESULT __stdcall GetShowInSwitchers(int *) = 0;
+    virtual HRESULT __stdcall SetShowInSwitchers(int) = 0;
+    virtual HRESULT __stdcall GetScaleFactor(int *) = 0;
+    virtual HRESULT __stdcall CanReceiveInput(BOOL *) = 0;
+    virtual HRESULT __stdcall GetCompatibilityPolicyType(APPLICATION_VIEW_COMPATIBILITY_POLICY *) = 0;
+    virtual HRESULT __stdcall SetCompatibilityPolicyType(APPLICATION_VIEW_COMPATIBILITY_POLICY) = 0;
+    //virtual HRESULT __stdcall GetPositionPriority(IShellPositionerPriority**) = 0; // removed in 1803
+    //virtual HRESULT __stdcall SetPositionPriority(IShellPositionerPriority*) = 0; // removed in 1803
+    virtual HRESULT __stdcall GetSizeConstraints(IImmersiveMonitor *, SIZE *, SIZE *) = 0;
+    virtual HRESULT __stdcall GetSizeConstraintsForDpi(UINT, SIZE *, SIZE *) = 0;
+    virtual HRESULT __stdcall SetSizeConstraintsForDpi(const UINT *, const SIZE *, const SIZE *) = 0;
+    //virtual HRESULT __stdcall QuerySizeConstraintsFromApp(void) = 0; // removed in 1803
+    virtual HRESULT __stdcall OnMinSizePreferencesUpdated(HWND) = 0;
+    virtual HRESULT __stdcall ApplyOperation(IApplicationViewOperation*) = 0;
+    virtual HRESULT __stdcall IsTray(BOOL *) = 0;
+    virtual HRESULT __stdcall IsInHighZOrderBand(BOOL *) = 0;
+    virtual HRESULT __stdcall IsSplashScreenPresented(BOOL *) = 0;
+    virtual HRESULT __stdcall Flash(void) = 0;
+    virtual HRESULT __stdcall GetRootSwitchableOwner(IApplicationView **) = 0; // proc45
+    virtual HRESULT __stdcall EnumerateOwnershipTree(IObjectArray **) = 0; // proc46
 
-    virtual __declspec(nothrow) HRESULT __stdcall GetEnterpriseId(PWSTR *) = 0; // proc47
-    virtual __declspec(nothrow) HRESULT __stdcall IsMirrored(BOOL *) = 0; //
+    virtual HRESULT __stdcall GetEnterpriseId(PWSTR *) = 0; // proc47
+    virtual HRESULT __stdcall IsMirrored(BOOL *) = 0; //
 
-    virtual __declspec(nothrow) HRESULT __stdcall Unknown1(int *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall Unknown2(int *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall Unknown3(int *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall Unknown4(int) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall Unknown5(int *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall Unknown6(int) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall Unknown7(void) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall Unknown8(int *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall Unknown9(int) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall Unknown10(int, int) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall Unknown11(int) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall Unknown12(SIZE *) = 0;
+    virtual HRESULT __stdcall Unknown1(int *) = 0;
+    virtual HRESULT __stdcall Unknown2(int *) = 0;
+    virtual HRESULT __stdcall Unknown3(int *) = 0;
+    virtual HRESULT __stdcall Unknown4(int) = 0;
+    virtual HRESULT __stdcall Unknown5(int *) = 0;
+    virtual HRESULT __stdcall Unknown6(int) = 0;
+    virtual HRESULT __stdcall Unknown7(void) = 0;
+    virtual HRESULT __stdcall Unknown8(int *) = 0;
+    virtual HRESULT __stdcall Unknown9(int) = 0;
+    virtual HRESULT __stdcall Unknown10(int, int) = 0;
+    virtual HRESULT __stdcall Unknown11(int) = 0;
+    virtual HRESULT __stdcall Unknown12(SIZE *) = 0;
 };
 
 struct __declspec(novtable uuid("FF72FFDD-BE7E-43FC-9C03-AD81681E88E4"))
@@ -130,17 +130,17 @@ struct __declspec(novtable uuid("4ce81583-1e4c-4632-a621-07a53543148f"))
 IVirtualDesktopPinnedApps : public IUnknown
 {
     // IUnknown methods
-    virtual __declspec(nothrow) HRESULT __stdcall QueryInterface(REFIID InterfaceID, LPVOID *Object) = 0;
-    virtual __declspec(nothrow) ULONG AddRef(void) = 0;
-    virtual __declspec(nothrow) ULONG Release(void) = 0;
+    virtual HRESULT __stdcall QueryInterface(REFIID InterfaceID, LPVOID *Object) = 0;
+    virtual ULONG __stdcall AddRef(void) = 0;
+    virtual ULONG __stdcall Release(void) = 0;
 
     // IVirtualDesktopPinnedApps methods
-    virtual __declspec(nothrow) HRESULT __stdcall IsAppIdPinned(PCWSTR AppID, BOOL *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall PinAppID(PCWSTR AppID) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall UnpinAppID(PCWSTR AppID) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall IsViewPinned(IApplicationView *, BOOL *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall PinView(IApplicationView *) = 0;
-    virtual __declspec(nothrow) HRESULT __stdcall UnpinView(IApplicationView *) = 0;
+    virtual HRESULT __stdcall IsAppIdPinned(PCWSTR AppID, BOOL *) = 0;
+    virtual HRESULT __stdcall PinAppID(PCWSTR AppID) = 0;
+    virtual HRESULT __stdcall UnpinAppID(PCWSTR AppID) = 0;
+    virtual HRESULT __stdcall IsViewPinned(IApplicationView *, BOOL *) = 0;
+    virtual HRESULT __stdcall PinView(IApplicationView *) = 0;
+    virtual HRESULT __stdcall UnpinView(IApplicationView *) = 0;
 };
 
 struct __declspec(novtable uuid("1841C6D7-4F9D-42C0-AF41-8747538F10E5"))
