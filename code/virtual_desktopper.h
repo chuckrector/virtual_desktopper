@@ -40,17 +40,17 @@ IID const IID_IVirtualDesktopNotification = {0xC179334C, 0x4295, 0x40D3, {0xBE, 
 struct __declspec(novtable uuid("372E1D3B-38D3-42E4-A15B-8AB2B178F513"))
 IApplicationView : public IInspectable
 {
-    // IUnknown methods
+    // IUnknown
     virtual HRESULT __stdcall QueryInterface(const IID &InterfaceID, LPVOID *Object) = 0;
     virtual ULONG __stdcall AddRef(void) = 0;
     virtual ULONG __stdcall Release(void) = 0;
 
-    // IInspectable methods
+    // IInspectable
     virtual HRESULT __stdcall GetIids(ULONG *Count, IID **InterfaceIDList) = 0;
     virtual HRESULT __stdcall GetRuntimeClassName(HSTRING *ClassName) = 0;
     virtual HRESULT __stdcall GetTrustLevel(TrustLevel *Level) = 0;
 
-    // IApplicationView methods
+    // IApplicationView
     virtual HRESULT __stdcall SetFocus(void) = 0;
     virtual HRESULT __stdcall SwitchTo(void) = 0;
     virtual HRESULT __stdcall TryInvokeBack(IAsyncCallback *) = 0; // Proc8
@@ -138,12 +138,12 @@ IVirtualDesktopNotificationService : public IUnknown
 struct __declspec(novtable uuid("4ce81583-1e4c-4632-a621-07a53543148f"))
 IVirtualDesktopPinnedApps : public IUnknown
 {
-    // IUnknown methods
+    // IUnknown
     virtual HRESULT __stdcall QueryInterface(REFIID InterfaceID, LPVOID *Object) = 0;
     virtual ULONG __stdcall AddRef(void) = 0;
     virtual ULONG __stdcall Release(void) = 0;
 
-    // IVirtualDesktopPinnedApps methods
+    // IVirtualDesktopPinnedApps
     virtual HRESULT __stdcall IsAppIdPinned(PCWSTR AppID, BOOL *) = 0;
     virtual HRESULT __stdcall PinAppID(PCWSTR AppID) = 0;
     virtual HRESULT __stdcall UnpinAppID(PCWSTR AppID) = 0;
