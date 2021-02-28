@@ -1,15 +1,4 @@
-#include <strsafe.h> // StringCbPrintf
-#include <windows.h>
-
 #include "virtual_desktopper.h"
-
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
-typedef bool b32;
-
-#define global_variable static
-#define internal static
 
 global_variable HANDLE GlobalTimer;
 global_variable HFONT GlobalFont;
@@ -226,7 +215,7 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
     {
         HRESULT Result = S_OK;
 
-        //.NOTE(chuck): Hiding unpins the window.
+        // NOTE(chuck): Hiding unpins the window.
         ShowWindow(GlobalWindow, SW_SHOW);
         PinWindow(GlobalWindow);
 

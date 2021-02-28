@@ -1,8 +1,18 @@
 #if !defined(VIRTUAL_DESKTOPPER_H)
 #define VIRTUAL_DESKTOPPER_H
 
-#include <shobjidl.h>
-#include <inspectable.h>
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+typedef bool b32;
+
+#define global_variable static
+#define internal static
+
+#include <inspectable.h> // IInspectable, HSTRING, TrustLevel
+#include <shobjidl.h> // IObjectArray, ObjectArray, IVirtualDesktopManager, VirtualDesktopManager
+#include <strsafe.h> // StringCbPrintf
+#include <windows.h>
 
 #define VIRTUAL_DESKTOP_NUMERAL_TIMEOUT 750
 
