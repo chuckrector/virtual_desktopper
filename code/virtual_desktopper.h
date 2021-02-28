@@ -22,24 +22,23 @@ enum AdjacentDesktop
     RightDirection = 4
 };
 
-CLSID const CLSID_ImmersiveShell = {0xC2F03A33, 0x21F5, 0x47FA, 0xB4, 0xBB, 0x15, 0x63, 0x62, 0xA2, 0xF2, 0x39};
-CLSID const CLSID_IVirtualNotificationService = {0xA501FDEC, 0x4A09, 0x464C, 0xAE, 0x4E, 0x1B, 0x9C, 0x21, 0xB8, 0x49, 0x18};
-CLSID const CLSID_VirtualDesktopAPI_Unknown = {0xC5E0CDCA, 0x7B6E, 0x41B2, 0x9F, 0xC4, 0xD9, 0x39, 0x75, 0xCC, 0x46, 0x7B};
-CLSID const CLSID_VirtualDesktopPinnedApps = {0xb5a399e7, 0x1c87, 0x46b8, 0x88, 0xe9, 0xfc, 0x57, 0x47, 0xb1, 0x71, 0xbd};
-
-IID const IID_IApplicationViewCollection  = {0x1841C6D7, 0x4F9D, 0x42C0, {0xAF, 0x41, 0x87, 0x47, 0x53, 0x8F, 0x10, 0xE5}};
-IID const IID_IVirtualDesktopNotification = {0xC179334C, 0x4295, 0x40D3, {0xBE, 0xA1, 0xC6, 0x54, 0xD9, 0x65, 0x60, 0x5A}};
+const GUID CLSID_ImmersiveShell = {0xC2F03A33, 0x21F5, 0x47FA, 0xB4, 0xBB, 0x15, 0x63, 0x62, 0xA2, 0xF2, 0x39};
+const GUID CLSID_IVirtualNotificationService = {0xA501FDEC, 0x4A09, 0x464C, 0xAE, 0x4E, 0x1B, 0x9C, 0x21, 0xB8, 0x49, 0x18};
+const GUID CLSID_VirtualDesktopAPI_Unknown = {0xC5E0CDCA, 0x7B6E, 0x41B2, 0x9F, 0xC4, 0xD9, 0x39, 0x75, 0xCC, 0x46, 0x7B};
+const GUID CLSID_VirtualDesktopPinnedApps = {0xb5a399e7, 0x1c87, 0x46b8, 0x88, 0xe9, 0xfc, 0x57, 0x47, 0xb1, 0x71, 0xbd};
+const GUID IID_IApplicationViewCollection  = {0x1841C6D7, 0x4F9D, 0x42C0, 0xAF, 0x41, 0x87, 0x47, 0x53, 0x8F, 0x10, 0xE5};
+const GUID IID_IVirtualDesktopNotification = {0xC179334C, 0x4295, 0x40D3, 0xBE, 0xA1, 0xC6, 0x54, 0xD9, 0x65, 0x60, 0x5A};
 
 struct __declspec(novtable uuid("372E1D3B-38D3-42E4-A15B-8AB2B178F513"))
 IApplicationView : public IInspectable
 {
     // IUnknown
-    virtual HRESULT __stdcall QueryInterface(const IID &InterfaceID, LPVOID *Object) = 0;
+    virtual HRESULT __stdcall QueryInterface(const GUID &InterfaceID, LPVOID *Object) = 0;
     virtual ULONG __stdcall AddRef(void) = 0;
     virtual ULONG __stdcall Release(void) = 0;
 
     // IInspectable
-    virtual HRESULT __stdcall GetIids(ULONG *Count, IID **InterfaceIDList) = 0;
+    virtual HRESULT __stdcall GetIids(ULONG *Count, GUID **InterfaceIDList) = 0;
     virtual HRESULT __stdcall GetRuntimeClassName(HSTRING *ClassName) = 0;
     virtual HRESULT __stdcall GetTrustLevel(TrustLevel *Level) = 0;
 
@@ -51,7 +50,7 @@ IApplicationView : public IInspectable
     virtual HRESULT __stdcall GetMonitor(UINT **) = 0; // Proc10
     virtual HRESULT __stdcall GetVisibility(int *) = 0; // Proc11
     virtual HRESULT __stdcall SetCloak(UINT, int) = 0; // Proc12
-    virtual HRESULT __stdcall GetPosition(REFIID, void **) = 0; // Proc13
+    virtual HRESULT __stdcall GetPosition(const GUID &, void **) = 0; // Proc13
     virtual HRESULT __stdcall SetPosition(UINT *) = 0; // Proc14
     virtual HRESULT __stdcall InsertAfterWindow(HWND) = 0; // Proc15
     virtual HRESULT __stdcall GetExtendedFramePosition(RECT *) = 0; // Proc16
