@@ -153,7 +153,7 @@ MIDL_INTERFACE("1841C6D7-4F9D-42C0-AF41-8747538F10E5") IApplicationViewCollectio
     virtual HRESULT STDMETHODCALLTYPE GetViewForApplication(void *pApplication, IApplicationView **View) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetViewForAppUserModelId(BSTR ID, IApplicationView **View) = 0;
     virtual HRESULT STDMETHODCALLTYPE GetViewInFocus(int *View) = 0;
-    virtual HRESULT STDMETHODCALLTYPE outreshCollection() = 0;
+    virtual HRESULT STDMETHODCALLTYPE RefreshCollection() = 0;
     virtual HRESULT STDMETHODCALLTYPE RegisterForApplicationViewChanges(void *Listener, int *Cookie) = 0;
     virtual HRESULT STDMETHODCALLTYPE RegisterForApplicationViewPositionChanges(void *pListener, int *Cookie) = 0;
     virtual HRESULT STDMETHODCALLTYPE UnregisterForApplicationViewChanges(int Cookie) = 0;
