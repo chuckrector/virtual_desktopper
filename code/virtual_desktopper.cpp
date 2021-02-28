@@ -51,7 +51,7 @@ Win32GetVirtualDesktopCount()
 {
     UINT Result = 1;
 
-    IObjectArray *ObjectArray = 0;
+    IObjectArray *ObjectArray;
     if(SUCCEEDED(GlobalVirtualDesktopManagerInternal->GetDesktops(&ObjectArray)))
     {
         ObjectArray->GetCount(&Result);
@@ -65,7 +65,7 @@ internal int
 Win32GetVirtualDesktopIndexByID(GUID VirtualDesktopID)
 {
     int Result = -1;
-    IObjectArray *ObjectArray = 0;
+    IObjectArray *ObjectArray;
 
     if(SUCCEEDED(GlobalVirtualDesktopManagerInternal->GetDesktops(&ObjectArray)))
     {
@@ -76,13 +76,13 @@ Win32GetVirtualDesktopIndexByID(GUID VirtualDesktopID)
                 Index < Count;
                 ++Index)
             {
-                IVirtualDesktop *Desktop = 0;
+                IVirtualDesktop *Desktop;
                 if(FAILED(ObjectArray->GetAt(Index, __uuidof(IVirtualDesktop), (void **)&Desktop)))
                 {
                     continue;
                 }
 
-                GUID ID = {0};
+                GUID ID;
                 if(SUCCEEDED(Desktop->GetID(&ID)) && ID == VirtualDesktopID)
                 {
                     Result = Index;
@@ -128,7 +128,7 @@ Win32GetCurrentVirtualDesktopIndex()
 internal void
 PinWindow(HWND Window)
 {
-    IApplicationView *ApplicationView = 0;
+    IApplicationView *ApplicationView;
     GlobalApplicationViewCollection->GetViewForHwnd(Window, &ApplicationView);
 
     if(ApplicationView)
@@ -146,7 +146,7 @@ VOID CALLBACK HideWindowCallback(void *Parameter, BOOLEAN TimerOrWaitFired)
 
 struct virtual_desktop_notification : IVirtualDesktopNotification
 {
-    ULONG Count{0};
+    ULONG Count;
 
     virtual HRESULT STDMETHODCALLTYPE
     QueryInterface(REFIID InterfaceIdentifier, void **Object) override
@@ -270,33 +270,19 @@ Win32InitVirtualDesktopNotifications()
 {
     b32 Result = false;
 
-    if (SUCCEEDED(CoInitializeEx(0, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE)))
-    {
-        OutputDebugString("CoInitializeEx SUCCESS\n");
-    }
-    else
-    {
-        OutputDebugString("CoInitializeEx failed\n");
-    }
-    IServiceProvider *ServiceProvider = 0;
-    if (SUCCEEDED(CoCreateInstance(CLSID_ImmersiveShell, 0, CLSCTX_LOCAL_SERVER, __uuidof(IServiceProvider), (void **)&ServiceProvider)))
-    {
-        OutputDebugString("CoCreateInstance SUCCESS\n");
-    }
-    else
-    {
-        OutputDebugString("CoCreateInstance failed\n");
-    }
+    CoInitializeEx(0, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+    IServiceProvider *ServiceProvider;
+    CoCreateInstance(CLSID_ImmersiveShell, 0, CLSCTX_LOCAL_SERVER, __uuidof(IServiceProvider), (void **)&ServiceProvider);
 
-    IVirtualDesktopManager *VirtualDesktopManager = 0;
+    IVirtualDesktopManager *VirtualDesktopManager;
     if(SUCCEEDED(ServiceProvider->QueryService(__uuidof(IVirtualDesktopManager), &VirtualDesktopManager)))
     {
         if(SUCCEEDED(ServiceProvider->QueryService(CLSID_VirtualDesktopAPI_Unknown, &GlobalVirtualDesktopManagerInternal)))
         {
-            IVirtualDesktopNotificationService *NotificationService = 0;
+            IVirtualDesktopNotificationService *NotificationService;
             if(SUCCEEDED(ServiceProvider->QueryService(CLSID_IVirtualNotificationService, &NotificationService)))
             {
-                DWORD Cookie = 0;
+                DWORD Cookie;
                 virtual_desktop_notification *VirtualDesktopNotification = new virtual_desktop_notification();
                 if(SUCCEEDED(NotificationService->Register(VirtualDesktopNotification, &Cookie)))
                 {
