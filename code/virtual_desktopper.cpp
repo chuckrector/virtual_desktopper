@@ -231,6 +231,10 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
         PinWindow(GlobalWindow);
 
         GlobalCurrentVirtualDesktopIndex = Win32GetVirtualDesktopIndex(NewDesktop);
+        int OldVirtualDesktopIndex = Win32GetVirtualDesktopIndex(OldDesktop);
+        char TempBuffer[MAX_PATH];
+        StringCbPrintf(TempBuffer, MAX_PATH, "CurrentVirtuaLDesktopChanged: old %d, new %d\n", OldVirtualDesktopIndex, GlobalCurrentVirtualDesktopIndex);
+        OutputDebugString(TempBuffer);
         RedrawWindow(GlobalWindow, 0, 0, RDW_INVALIDATE);
 
         DeleteTimerQueueTimer(0, GlobalTimer, 0);
@@ -381,11 +385,18 @@ WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLine, int ShowC
     {
         int WindowWidth = 200;
         int WindowHeight = 200;
+        int ClientWidth = GetSystemMetrics(SM_CXFULLSCREEN);
+        int ClientHeight = GetSystemMetrics(SM_CYFULLSCREEN);
+
+        char TempBuffer[MAX_PATH];
+        StringCbPrintf(TempBuffer, MAX_PATH, "Full-screen client area: %dx%d\n", ClientWidth, ClientHeight);
+        OutputDebugString(TempBuffer);
+
         GlobalWindow = CreateWindowEx(
             WS_EX_TOPMOST,
             WindowClass.lpszClassName, "Virtual Desktopper",
             WS_POPUP | WS_VISIBLE,
-            3840/2 - WindowHeight/2, 2160/2 - WindowWidth/2, WindowWidth, WindowHeight,
+            ClientWidth/2 - WindowHeight/2, ClientHeight/2 - WindowWidth/2, WindowWidth, WindowHeight,
             0, 0, Instance, 0);
 
         if(GlobalWindow)
