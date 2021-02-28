@@ -28,164 +28,150 @@ CLSID const CLSID_VirtualDesktopPinnedApps = {0xb5a399e7, 0x1c87, 0x46b8, 0x88, 
 IID const IID_IApplicationViewCollection  = {0x1841C6D7, 0x4F9D, 0x42C0, {0xAF, 0x41, 0x87, 0x47, 0x53, 0x8F, 0x10, 0xE5}};
 IID const IID_IVirtualDesktopNotification = {0xC179334C, 0x4295, 0x40D3, {0xBE, 0xA1, 0xC6, 0x54, 0xD9, 0x65, 0x60, 0x5A}};
 
-DECLARE_INTERFACE_IID_(IApplicationView, IInspectable, "372E1D3B-38D3-42E4-A15B-8AB2B178F513")
+struct __declspec(novtable uuid("372E1D3B-38D3-42E4-A15B-8AB2B178F513"))
+IApplicationView : public IInspectable
 {
-    /*** IUnknown methods ***/
-    STDMETHOD(QueryInterface)(THIS_ REFIID riid, LPVOID FAR* ppvObject) PURE;
-    STDMETHOD_(ULONG, AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG, Release)(THIS) PURE;
+    // IUnknown methods
+    virtual __declspec(nothrow) HRESULT __stdcall QueryInterface(const IID &InterfaceID, LPVOID *Object) = 0;
+    virtual __declspec(nothrow) ULONG __stdcall AddRef(void) = 0;
+    virtual __declspec(nothrow) ULONG __stdcall Release(void) = 0;
 
-    /*** IInspectable methods ***/
-    STDMETHOD(GetIids)(__RPC__out ULONG *iidCount, __RPC__deref_out_ecount_full_opt(*iidCount) IID **iids) PURE;
-    STDMETHOD(GetRuntimeClassName)(__RPC__deref_out_opt HSTRING *className) PURE;
-    STDMETHOD(GetTrustLevel)(__RPC__out TrustLevel *trustLevel) PURE;
+    // IInspectable methods
+    virtual __declspec(nothrow) HRESULT __stdcall GetIids(ULONG *Count, IID **InterfaceIDList) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall GetRuntimeClassName(HSTRING *ClassName) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall GetTrustLevel(TrustLevel *Level) = 0;
 
-    /*** IApplicationView methods ***/
-    STDMETHOD(SetFocus)(THIS) PURE;
-    STDMETHOD(SwitchTo)(THIS) PURE;
-    STDMETHOD(TryInvokeBack)(THIS_ IAsyncCallback*) PURE; // Proc8
-    STDMETHOD(GetThumbnailWindow)(THIS_ HWND*) PURE; // Proc9
-    STDMETHOD(GetMonitor)(THIS_ IImmersiveMonitor**) PURE; // Proc10
-    STDMETHOD(GetVisibility)(THIS_ int*) PURE; // Proc11
-    STDMETHOD(SetCloak)(THIS_ APPLICATION_VIEW_CLOAK_TYPE, int) PURE; // Proc12
-    STDMETHOD(GetPosition)(THIS_ REFIID, void**) PURE; // Proc13
-    STDMETHOD(SetPosition)(THIS_ IApplicationViewPosition*) PURE; // Proc14
-    STDMETHOD(InsertAfterWindow)(THIS_ HWND) PURE; // Proc15
-    STDMETHOD(GetExtendedFramePosition)(THIS_ RECT*) PURE; // Proc16
-    STDMETHOD(GetAppUserModelId)(THIS_ PWSTR*) PURE; // Proc17
-    STDMETHOD(SetAppUserModelId)(THIS_ PCWSTR) PURE; // Proc18
-    STDMETHOD(IsEqualByAppUserModelId)(THIS_ PCWSTR, int*) PURE; // Proc19
-    STDMETHOD(GetViewState)(THIS_ UINT*) PURE; // Proc20
-    STDMETHOD(SetViewState)(THIS_ UINT) PURE; // Proc21
-    STDMETHOD(GetNeediness)(THIS_ int*) PURE; // Proc22
-    STDMETHOD(GetLastActivationTimestamp)(THIS_ ULONGLONG*) PURE;
-    STDMETHOD(SetLastActivationTimestamp)(THIS_ ULONGLONG) PURE;
-    STDMETHOD(GetVirtualDesktopId)(THIS_ GUID*) PURE;
-    STDMETHOD(SetVirtualDesktopId)(THIS_ REFGUID) PURE;
-    STDMETHOD(GetShowInSwitchers)(THIS_ int*) PURE;
-    STDMETHOD(SetShowInSwitchers)(THIS_ int) PURE;
-    STDMETHOD(GetScaleFactor)(THIS_ int*) PURE;
-    STDMETHOD(CanReceiveInput)(THIS_ BOOL*) PURE;
-    STDMETHOD(GetCompatibilityPolicyType)(THIS_ APPLICATION_VIEW_COMPATIBILITY_POLICY*) PURE;
-    STDMETHOD(SetCompatibilityPolicyType)(THIS_ APPLICATION_VIEW_COMPATIBILITY_POLICY) PURE;
-    //STDMETHOD(GetPositionPriority)(THIS_ IShellPositionerPriority**) PURE; // removed in 1803
-    //STDMETHOD(SetPositionPriority)(THIS_ IShellPositionerPriority*) PURE; // removed in 1803
-    STDMETHOD(GetSizeConstraints)(THIS_ IImmersiveMonitor*, SIZE*, SIZE*) PURE;
-    STDMETHOD(GetSizeConstraintsForDpi)(THIS_ UINT, SIZE*, SIZE*) PURE;
-    STDMETHOD(SetSizeConstraintsForDpi)(THIS_ const UINT*, const SIZE*, const SIZE*) PURE;
-    //STDMETHOD(QuerySizeConstraintsFromApp)(THIS) PURE; // removed in 1803
-    STDMETHOD(OnMinSizePreferencesUpdated)(THIS_ HWND) PURE;
-    STDMETHOD(ApplyOperation)(THIS_ IApplicationViewOperation*) PURE;
-    STDMETHOD(IsTray)(THIS_ BOOL*) PURE;
-    STDMETHOD(IsInHighZOrderBand)(THIS_ BOOL*) PURE;
-    STDMETHOD(IsSplashScreenPresented)(THIS_ BOOL*) PURE;
-    STDMETHOD(Flash)(THIS) PURE;
-    STDMETHOD(GetRootSwitchableOwner)(THIS_ IApplicationView**) PURE; // proc45
-    STDMETHOD(EnumerateOwnershipTree)(THIS_ IObjectArray**) PURE; // proc46
+    // IApplicationView methods
+    virtual __declspec(nothrow) HRESULT __stdcall SetFocus(void) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall SwitchTo(void) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall TryInvokeBack(IAsyncCallback *) = 0; // Proc8
+    virtual __declspec(nothrow) HRESULT __stdcall GetThumbnailWindow(HWND *) = 0; // Proc9
+    virtual __declspec(nothrow) HRESULT __stdcall GetMonitor(IImmersiveMonitor **) = 0; // Proc10
+    virtual __declspec(nothrow) HRESULT __stdcall GetVisibility(int *) = 0; // Proc11
+    virtual __declspec(nothrow) HRESULT __stdcall SetCloak(APPLICATION_VIEW_CLOAK_TYPE, int) = 0; // Proc12
+    virtual __declspec(nothrow) HRESULT __stdcall GetPosition(REFIID, void **) = 0; // Proc13
+    virtual __declspec(nothrow) HRESULT __stdcall SetPosition(IApplicationViewPosition *) = 0; // Proc14
+    virtual __declspec(nothrow) HRESULT __stdcall InsertAfterWindow(HWND) = 0; // Proc15
+    virtual __declspec(nothrow) HRESULT __stdcall GetExtendedFramePosition(RECT *) = 0; // Proc16
+    virtual __declspec(nothrow) HRESULT __stdcall GetAppUserModelId(PWSTR *) = 0; // Proc17
+    virtual __declspec(nothrow) HRESULT __stdcall SetAppUserModelId(PCWSTR) = 0; // Proc18
+    virtual __declspec(nothrow) HRESULT __stdcall IsEqualByAppUserModelId(PCWSTR, int *) = 0; // Proc19
+    virtual __declspec(nothrow) HRESULT __stdcall GetViewState(UINT *) = 0; // Proc20
+    virtual __declspec(nothrow) HRESULT __stdcall SetViewState(UINT) = 0; // Proc21
+    virtual __declspec(nothrow) HRESULT __stdcall GetNeediness(int *) = 0; // Proc22
+    virtual __declspec(nothrow) HRESULT __stdcall GetLastActivationTimestamp(ULONGLONG *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall SetLastActivationTimestamp(ULONGLONG) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall GetVirtualDesktopId(GUID *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall SetVirtualDesktopId(REFGUID) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall GetShowInSwitchers(int *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall SetShowInSwitchers(int) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall GetScaleFactor(int *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall CanReceiveInput(BOOL *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall GetCompatibilityPolicyType(APPLICATION_VIEW_COMPATIBILITY_POLICY *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall SetCompatibilityPolicyType(APPLICATION_VIEW_COMPATIBILITY_POLICY) = 0;
+    //virtual __declspec(nothrow) HRESULT __stdcall GetPositionPriority(IShellPositionerPriority**) = 0; // removed in 1803
+    //virtual __declspec(nothrow) HRESULT __stdcall SetPositionPriority(IShellPositionerPriority*) = 0; // removed in 1803
+    virtual __declspec(nothrow) HRESULT __stdcall GetSizeConstraints(IImmersiveMonitor *, SIZE *, SIZE *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall GetSizeConstraintsForDpi(UINT, SIZE *, SIZE *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall SetSizeConstraintsForDpi(const UINT *, const SIZE *, const SIZE *) = 0;
+    //virtual __declspec(nothrow) HRESULT __stdcall QuerySizeConstraintsFromApp(void) = 0; // removed in 1803
+    virtual __declspec(nothrow) HRESULT __stdcall OnMinSizePreferencesUpdated(HWND) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall ApplyOperation(IApplicationViewOperation*) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall IsTray(BOOL *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall IsInHighZOrderBand(BOOL *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall IsSplashScreenPresented(BOOL *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall Flash(void) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall GetRootSwitchableOwner(IApplicationView **) = 0; // proc45
+    virtual __declspec(nothrow) HRESULT __stdcall EnumerateOwnershipTree(IObjectArray **) = 0; // proc46
 
-    STDMETHOD(GetEnterpriseId)(THIS_ PWSTR*) PURE; // proc47
-    STDMETHOD(IsMirrored)(THIS_ BOOL*) PURE; //
+    virtual __declspec(nothrow) HRESULT __stdcall GetEnterpriseId(PWSTR *) = 0; // proc47
+    virtual __declspec(nothrow) HRESULT __stdcall IsMirrored(BOOL *) = 0; //
 
-    STDMETHOD(Unknown1)(THIS_ int*) PURE;
-    STDMETHOD(Unknown2)(THIS_ int*) PURE;
-    STDMETHOD(Unknown3)(THIS_ int*) PURE;
-    STDMETHOD(Unknown4)(THIS_ int) PURE;
-    STDMETHOD(Unknown5)(THIS_ int*) PURE;
-    STDMETHOD(Unknown6)(THIS_ int) PURE;
-    STDMETHOD(Unknown7)(THIS) PURE;
-    STDMETHOD(Unknown8)(THIS_ int*) PURE;
-    STDMETHOD(Unknown9)(THIS_ int) PURE;
-    STDMETHOD(Unknown10)(THIS_ int, int) PURE;
-    STDMETHOD(Unknown11)(THIS_ int) PURE;
-    STDMETHOD(Unknown12)(THIS_ SIZE*) PURE;
+    virtual __declspec(nothrow) HRESULT __stdcall Unknown1(int *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall Unknown2(int *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall Unknown3(int *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall Unknown4(int) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall Unknown5(int *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall Unknown6(int) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall Unknown7(void) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall Unknown8(int *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall Unknown9(int) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall Unknown10(int, int) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall Unknown11(int) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall Unknown12(SIZE *) = 0;
 };
 
-MIDL_INTERFACE("FF72FFDD-BE7E-43FC-9C03-AD81681E88E4")
+struct __declspec(novtable uuid("FF72FFDD-BE7E-43FC-9C03-AD81681E88E4"))
 IVirtualDesktop : public IUnknown
 {
-    virtual HRESULT STDMETHODCALLTYPE IsViewVisible(IApplicationView *View, int *Visible) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetID(GUID *ID) = 0;
+    virtual HRESULT __stdcall IsViewVisible(IApplicationView *View, int *Visible) = 0;
+    virtual HRESULT __stdcall GetID(GUID *ID) = 0;
 };
 
-MIDL_INTERFACE("C179334C-4295-40D3-BEA1-C654D965605A")
+struct __declspec(novtable uuid("C179334C-4295-40D3-BEA1-C654D965605A"))
 IVirtualDesktopNotification : public IUnknown
 {
-    virtual HRESULT STDMETHODCALLTYPE VirtualDesktopCreated(IVirtualDesktop *Desktop) = 0;
-    virtual HRESULT STDMETHODCALLTYPE VirtualDesktopDestroyBegin(IVirtualDesktop *DesktopDestroyed, IVirtualDesktop *DesktopFallback) = 0;
-    virtual HRESULT STDMETHODCALLTYPE VirtualDesktopDestroyFailed(IVirtualDesktop *DesktopDestroyed, IVirtualDesktop *DesktopFallback) = 0;
-    virtual HRESULT STDMETHODCALLTYPE VirtualDesktopDestroyed(IVirtualDesktop *DesktopDestroyed, IVirtualDesktop *DesktopFallback) = 0;
-    virtual HRESULT STDMETHODCALLTYPE ViewVirtualDesktopChanged(IApplicationView *View) = 0;
-    virtual HRESULT STDMETHODCALLTYPE CurrentVirtualDesktopChanged(IVirtualDesktop *OldDesktop, IVirtualDesktop *NewDesktop) = 0;
+    virtual HRESULT __stdcall VirtualDesktopCreated(IVirtualDesktop *Desktop) = 0;
+    virtual HRESULT __stdcall VirtualDesktopDestroyBegin(IVirtualDesktop *DesktopDestroyed, IVirtualDesktop *DesktopFallback) = 0;
+    virtual HRESULT __stdcall VirtualDesktopDestroyFailed(IVirtualDesktop *DesktopDestroyed, IVirtualDesktop *DesktopFallback) = 0;
+    virtual HRESULT __stdcall VirtualDesktopDestroyed(IVirtualDesktop *DesktopDestroyed, IVirtualDesktop *DesktopFallback) = 0;
+    virtual HRESULT __stdcall ViewVirtualDesktopChanged(IApplicationView *View) = 0;
+    virtual HRESULT __stdcall CurrentVirtualDesktopChanged(IVirtualDesktop *OldDesktop, IVirtualDesktop *NewDesktop) = 0;
 };
 
-MIDL_INTERFACE("0CD45E71-D927-4F15-8B0A-8FEF525337BF")
+struct __declspec(novtable uuid("0CD45E71-D927-4F15-8B0A-8FEF525337BF"))
 IVirtualDesktopNotificationService : public IUnknown
 {
-    virtual HRESULT STDMETHODCALLTYPE Register(IVirtualDesktopNotification *Notification, DWORD *Cookie) = 0;
-    virtual HRESULT STDMETHODCALLTYPE Unregister(DWORD Cookie) = 0;
+    virtual HRESULT __stdcall Register(IVirtualDesktopNotification *Notification, DWORD *Cookie) = 0;
+    virtual HRESULT __stdcall Unregister(DWORD Cookie) = 0;
 };
 
-DECLARE_INTERFACE_IID_(IVirtualDesktopPinnedApps, IUnknown, "4ce81583-1e4c-4632-a621-07a53543148f")
+struct __declspec(novtable uuid("4ce81583-1e4c-4632-a621-07a53543148f"))
+IVirtualDesktopPinnedApps : public IUnknown
 {
-    /*** IUnknown methods ***/
-    STDMETHOD(QueryInterface)(THIS_ REFIID RefIID, LPVOID FAR *Object) PURE;
-    STDMETHOD_(ULONG, AddRef)(THIS) PURE;
-    STDMETHOD_(ULONG, Release)(THIS) PURE;
+    // IUnknown methods
+    virtual __declspec(nothrow) HRESULT __stdcall QueryInterface(REFIID InterfaceID, LPVOID *Object) = 0;
+    virtual __declspec(nothrow) ULONG AddRef(void) = 0;
+    virtual __declspec(nothrow) ULONG Release(void) = 0;
 
-    /*** IVirtualDesktopPinnedApps methods ***/
-    STDMETHOD(IsAppIdPinned)(THIS_ PCWSTR appId, BOOL *) PURE;
-    STDMETHOD(PinAppID)(THIS_ PCWSTR AppID) PURE;
-    STDMETHOD(UnpinAppID)(THIS_ PCWSTR AppID) PURE;
-    STDMETHOD(IsViewPinned)(THIS_ IApplicationView *, BOOL *) PURE;
-    STDMETHOD(PinView)(THIS_ IApplicationView *) PURE;
-    STDMETHOD(UnpinView)(THIS_ IApplicationView *) PURE;
+    // IVirtualDesktopPinnedApps methods
+    virtual __declspec(nothrow) HRESULT __stdcall IsAppIdPinned(PCWSTR AppID, BOOL *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall PinAppID(PCWSTR AppID) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall UnpinAppID(PCWSTR AppID) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall IsViewPinned(IApplicationView *, BOOL *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall PinView(IApplicationView *) = 0;
+    virtual __declspec(nothrow) HRESULT __stdcall UnpinView(IApplicationView *) = 0;
 };
 
-// NOTE(chuck): The GUID of IApplicationViewCollection was changed (!) in build 1809.
-// See https://github.com/Grabacr07/VirtualDesktop/issues/36
-//MIDL_INTERFACE("2C08ADF0-A386-4B35-9250-0FE183476FCC") IApplicationViewCollection : public IUnknown
-MIDL_INTERFACE("1841C6D7-4F9D-42C0-AF41-8747538F10E5") IApplicationViewCollection : public IUnknown
+struct __declspec(novtable uuid("1841C6D7-4F9D-42C0-AF41-8747538F10E5"))
+IApplicationViewCollection : public IUnknown
 {
-    virtual HRESULT STDMETHODCALLTYPE GetViews(IObjectArray **Array) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetViewsByZOrder(IObjectArray **Array) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetViewsByAppUserModelId(BSTR pId, IObjectArray **Array) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetViewForHwnd(HWND pHwnd, IApplicationView **View) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetViewForApplication(void *pApplication, IApplicationView **View) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetViewForAppUserModelId(BSTR ID, IApplicationView **View) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetViewInFocus(int *View) = 0;
-    virtual HRESULT STDMETHODCALLTYPE RefreshCollection() = 0;
-    virtual HRESULT STDMETHODCALLTYPE RegisterForApplicationViewChanges(void *Listener, int *Cookie) = 0;
-    virtual HRESULT STDMETHODCALLTYPE RegisterForApplicationViewPositionChanges(void *pListener, int *Cookie) = 0;
-    virtual HRESULT STDMETHODCALLTYPE UnregisterForApplicationViewChanges(int Cookie) = 0;
+    virtual HRESULT __stdcall GetViews(IObjectArray **Array) = 0;
+    virtual HRESULT __stdcall GetViewsByZOrder(IObjectArray **Array) = 0;
+    virtual HRESULT __stdcall GetViewsByAppUserModelId(BSTR pId, IObjectArray **Array) = 0;
+    virtual HRESULT __stdcall GetViewForHwnd(HWND pHwnd, IApplicationView **View) = 0;
+    virtual HRESULT __stdcall GetViewForApplication(void *pApplication, IApplicationView **View) = 0;
+    virtual HRESULT __stdcall GetViewForAppUserModelId(BSTR ID, IApplicationView **View) = 0;
+    virtual HRESULT __stdcall GetViewInFocus(int *View) = 0;
+    virtual HRESULT __stdcall RefreshCollection() = 0;
+    virtual HRESULT __stdcall RegisterForApplicationViewChanges(void *Listener, int *Cookie) = 0;
+    virtual HRESULT __stdcall RegisterForApplicationViewPositionChanges(void *pListener, int *Cookie) = 0;
+    virtual HRESULT __stdcall UnregisterForApplicationViewChanges(int Cookie) = 0;
 };
 
-struct IVirtualDesktopManagerInternal : public IUnknown
+struct __declspec(novtable uuid("f31574d6-b682-4cdc-bd56-1827860abec6"))
+IVirtualDesktopManagerInternal : public IUnknown
 {
-    virtual HRESULT STDMETHODCALLTYPE GetCount(UINT *Count) = 0;
-    virtual HRESULT STDMETHODCALLTYPE MoveViewToDesktop(IApplicationView *View, IVirtualDesktop *Desktop) = 0;
-    // 10240
-    virtual HRESULT STDMETHODCALLTYPE CanViewMoveDesktops(IApplicationView *View, int *CanViewMoveDesktops) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetCurrentDesktop(IVirtualDesktop **Desktop) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetDesktops(IObjectArray **Desktops) = 0;
-    virtual HRESULT STDMETHODCALLTYPE GetAdjacentDesktop(IVirtualDesktop *DesktopReference, AdjacentDesktop Direction, IVirtualDesktop **AdjacentDesktop) = 0;
-    virtual HRESULT STDMETHODCALLTYPE SwitchDesktop(IVirtualDesktop *Desktop) = 0;
-    virtual HRESULT STDMETHODCALLTYPE CreateDesktopW(IVirtualDesktop **NewDesktop) = 0;
-    virtual HRESULT STDMETHODCALLTYPE RemoveDesktop(IVirtualDesktop *Remove, IVirtualDesktop *pFallbackDesktop) = 0;
-    // 10240
-    virtual HRESULT STDMETHODCALLTYPE FindDesktop(GUID *DesktopID, IVirtualDesktop **Desktop) = 0;
+    virtual HRESULT __stdcall GetCount(UINT *Count) = 0;
+    virtual HRESULT __stdcall MoveViewToDesktop(IApplicationView *View, IVirtualDesktop *Desktop) = 0;
+    virtual HRESULT __stdcall CanViewMoveDesktops(IApplicationView *View, int *CanViewMoveDesktops) = 0;
+    virtual HRESULT __stdcall GetCurrentDesktop(IVirtualDesktop **Desktop) = 0;
+    virtual HRESULT __stdcall GetDesktops(IObjectArray **Desktops) = 0;
+    virtual HRESULT __stdcall GetAdjacentDesktop(IVirtualDesktop *DesktopReference, AdjacentDesktop Direction, IVirtualDesktop **AdjacentDesktop) = 0;
+    virtual HRESULT __stdcall SwitchDesktop(IVirtualDesktop *Desktop) = 0;
+    virtual HRESULT __stdcall CreateDesktopW(IVirtualDesktop **NewDesktop) = 0;
+    virtual HRESULT __stdcall RemoveDesktop(IVirtualDesktop *Remove, IVirtualDesktop *pFallbackDesktop) = 0;
+    virtual HRESULT __stdcall FindDesktop(GUID *DesktopID, IVirtualDesktop **Desktop) = 0;
 };
-
-// // 10130
-// MIDL_INTERFACE("EF9F1A6C-D3CC-4358-B712-F84B635BEBE7")
-// IVirtualDesktopManagerInternal10130 : public
-// IVirtualDesktopManagerInternal{};
-// // 10240
-// MIDL_INTERFACE("AF8DA486-95BB-4460-B3B7-6E7A6B2962B5")
-// IVirtualDesktopManagerInternal10240 : public
-// IVirtualDesktopManagerInternal{};
-// // 10536
-MIDL_INTERFACE("f31574d6-b682-4cdc-bd56-1827860abec6")
-IVirtualDesktopManagerInternal10536 : public
-IVirtualDesktopManagerInternal{};
 
 #endif // VIRTUAL_DESKTOPPER_H

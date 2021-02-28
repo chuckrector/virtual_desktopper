@@ -8,6 +8,7 @@ mkdir build
 pushd build
 
 REM cl %CompilerFlags% ..\code\virtual_desktopper.cpp
+@REM cl %CompilerFlags% ..\code\virtual_desktopper.cpp /E /link %LinkerFlags% > preproc.txt
 cl %CompilerFlags% ..\code\virtual_desktopper.cpp /link %LinkerFlags%
 
 popd

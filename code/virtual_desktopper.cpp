@@ -16,7 +16,7 @@ global_variable HFONT GlobalFont;
 global_variable HWND GlobalWindow;
 global_variable IApplicationViewCollection *GlobalApplicationViewCollection;
 global_variable int GlobalCurrentVirtualDesktopIndex;
-global_variable IVirtualDesktopManagerInternal10536 *GlobalVirtualDesktopManagerInternal;
+global_variable IVirtualDesktopManagerInternal *GlobalVirtualDesktopManagerInternal;
 global_variable IVirtualDesktopPinnedApps *GlobalVirtualDesktopPinnedApps;
 
 LRESULT CALLBACK
