@@ -7,9 +7,10 @@ global_variable IApplicationViewCollection *GlobalApplicationViewCollection;
 global_variable int GlobalCurrentVirtualDesktopIndex;
 global_variable IVirtualDesktopManagerInternal *GlobalVirtualDesktopManagerInternal;
 global_variable IVirtualDesktopPinnedApps *GlobalVirtualDesktopPinnedApps;
+global_variable char GlobalTempBuffer[MAX_PATH];
 
 LRESULT __stdcall
-MainWindowCallback(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
+Win32MainWindowCallback(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
 {
     LRESULT Result = 0;
 
@@ -24,14 +25,13 @@ MainWindowCallback(HWND Window, UINT Message, WPARAM WParam, LPARAM LParam)
             GetClientRect(Window, &ClientRect);
             FillRect(DeviceContext, &ClientRect, (HBRUSH)GetStockObject(BLACK_PEN));
 
-            char Text[MAX_PATH];
-            StringCbPrintf(Text, MAX_PATH, "%d", 1 + GlobalCurrentVirtualDesktopIndex);
-            int TextLength = (int)strlen(Text);
+            StringCbPrintf(GlobalTempBuffer, MAX_PATH, "%d", 1 + GlobalCurrentVirtualDesktopIndex);
+            int TextLength = (int)strlen(GlobalTempBuffer);
 
             SelectObject(DeviceContext, GlobalFont);
             SetTextColor(DeviceContext, RGB(255, 255, 255));
             SetBkColor(DeviceContext, RGB(0, 0, 0));
-            DrawText(DeviceContext, Text, TextLength, &ClientRect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
+            DrawText(DeviceContext, GlobalTempBuffer, TextLength, &ClientRect, DT_SINGLELINE | DT_CENTER | DT_VCENTER);
 
             EndPaint(Window, &PaintStruct);
             break;
@@ -117,16 +117,15 @@ Win32GetVirtualDesktopIndex(IVirtualDesktop *Desktop)
 internal int
 Win32GetCurrentVirtualDesktopIndex()
 {
-    int Result;
     IVirtualDesktop *Desktop;
     GlobalVirtualDesktopManagerInternal->GetCurrentDesktop(&Desktop);
-    Result = Win32GetVirtualDesktopIndex(Desktop);
+    int Result = Win32GetVirtualDesktopIndex(Desktop);
     Desktop->Release();
     return(Result);
 }
 
 internal void
-PinWindow(HWND Window)
+Win32PinWindow(HWND Window)
 {
     IApplicationView *ApplicationView;
     GlobalApplicationViewCollection->GetViewForHwnd(Window, &ApplicationView);
@@ -139,7 +138,7 @@ PinWindow(HWND Window)
 }
 
 void __stdcall
-HideWindowCallback(void *Parameter, BOOLEAN TimerOrWaitFired)
+Win32HideWindowCallback(void *Parameter, BOOLEAN TimerOrWaitFired)
 {
     // NOTE(chuck): Hiding unpins the window.
     ShowWindow(GlobalWindow, SW_HIDE);
@@ -149,8 +148,8 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
 {
     ULONG Count;
 
-    virtual HRESULT STDMETHODCALLTYPE
-    QueryInterface(REFIID InterfaceIdentifier, void **Object) override
+    virtual HRESULT __stdcall
+    QueryInterface(const GUID &InterfaceIdentifier, void **Object) override
     {
         HRESULT Result;
         OutputDebugString("QueryInterface\n");
@@ -163,7 +162,7 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
             *Object = 0;
 
             if((InterfaceIdentifier == IID_IUnknown) ||
-               (InterfaceIdentifier == IID_IVirtualDesktopNotification))
+               (InterfaceIdentifier == GUID_IVirtualDesktopNotification))
             {
                 *Object = (void *)this;
                 AddRef();
@@ -178,28 +177,23 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
         return(Result);
     }
 
-    virtual ULONG STDMETHODCALLTYPE
+    virtual ULONG __stdcall
     AddRef() override
     {
-        ULONG Result;
         OutputDebugString("AddRef\n");
-        Result = InterlockedIncrement(&Count);
+        ULONG Result = InterlockedIncrement(&Count);
         return(Result);
     }
 
-    virtual ULONG STDMETHODCALLTYPE
+    virtual ULONG __stdcall
     Release() override
     {
-        ULONG Result;
-
         OutputDebugString("Release\n");
-
-        Result = InterlockedDecrement(&Count);
+        ULONG Result = InterlockedDecrement(&Count);
         if(Result == 0)
         {
             delete this;
         }
-
         return(Result);
     }
 
@@ -218,23 +212,22 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
 
         // NOTE(chuck): Hiding unpins the window.
         ShowWindow(GlobalWindow, SW_SHOW);
-        PinWindow(GlobalWindow);
+        Win32PinWindow(GlobalWindow);
 
         GlobalCurrentVirtualDesktopIndex = Win32GetVirtualDesktopIndex(NewDesktop);
         int OldVirtualDesktopIndex = Win32GetVirtualDesktopIndex(OldDesktop);
-        char TempBuffer[MAX_PATH];
-        StringCbPrintf(TempBuffer, MAX_PATH, "CurrentVirtuaLDesktopChanged: old %d, new %d\n", OldVirtualDesktopIndex, GlobalCurrentVirtualDesktopIndex);
-        OutputDebugString(TempBuffer);
+        StringCbPrintf(GlobalTempBuffer, MAX_PATH, "CurrentVirtuaLDesktopChanged: old %d, new %d\n", OldVirtualDesktopIndex, GlobalCurrentVirtualDesktopIndex);
+        OutputDebugString(GlobalTempBuffer);
         RedrawWindow(GlobalWindow, 0, 0, RDW_INVALIDATE);
 
         DeleteTimerQueueTimer(0, GlobalTimer, 0);
-        CreateTimerQueueTimer(&GlobalTimer, 0, HideWindowCallback, 0, VIRTUAL_DESKTOP_NUMERAL_TIMEOUT, 0, WT_EXECUTEONLYONCE);
+        CreateTimerQueueTimer(&GlobalTimer, 0, Win32HideWindowCallback, 0, VIRTUAL_DESKTOP_NUMERAL_TIMEOUT, 0, WT_EXECUTEONLYONCE);
 
         return(Result);
     }
 
     HRESULT
-    VirtualDesktopCreated(IVirtualDesktop *pDesktop)
+    VirtualDesktopCreated(IVirtualDesktop *Desktop)
     {
         HRESULT Result = S_OK;
         OutputDebugString("VirtualDesktopCreated\n");
@@ -242,7 +235,7 @@ struct virtual_desktop_notification : IVirtualDesktopNotification
     }
 
     HRESULT
-    VirtualDesktopDestroyBegin(IVirtualDesktop *pDesktopDestroyed, IVirtualDesktop *pDesktopFallback)
+    VirtualDesktopDestroyBegin(IVirtualDesktop *DesktopDestroyed, IVirtualDesktop *DesktopFallback)
     {
         HRESULT Result = S_OK;
         OutputDebugString("VirtualDesktopDestroyBegin\n");
@@ -273,37 +266,30 @@ Win32InitVirtualDesktopNotifications()
 
     CoInitializeEx(0, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
     IServiceProvider *ServiceProvider;
-    CoCreateInstance(CLSID_ImmersiveShell, 0, CLSCTX_LOCAL_SERVER, __uuidof(IServiceProvider), (void **)&ServiceProvider);
+    CoCreateInstance(GUID_ImmersiveShell, 0, CLSCTX_LOCAL_SERVER, __uuidof(IServiceProvider), (void **)&ServiceProvider);
 
     IVirtualDesktopManager *VirtualDesktopManager;
     if(S_OK == ServiceProvider->QueryService(__uuidof(IVirtualDesktopManager), &VirtualDesktopManager))
     {
-        if(S_OK == ServiceProvider->QueryService(CLSID_VirtualDesktopAPI_Unknown, &GlobalVirtualDesktopManagerInternal))
+        if(S_OK == ServiceProvider->QueryService(GUID_VirtualDesktopAPI_Unknown, &GlobalVirtualDesktopManagerInternal))
         {
             IVirtualDesktopNotificationService *NotificationService;
-            if(S_OK == ServiceProvider->QueryService(CLSID_IVirtualNotificationService, &NotificationService))
+            if(S_OK == ServiceProvider->QueryService(GUID_IVirtualNotificationService, &NotificationService))
             {
                 DWORD Cookie;
                 virtual_desktop_notification *VirtualDesktopNotification = new virtual_desktop_notification();
                 if(S_OK == NotificationService->Register(VirtualDesktopNotification, &Cookie))
                 {
-                    if(S_OK == ServiceProvider->QueryService(
-                        IID_IApplicationViewCollection,
-                        IID_IApplicationViewCollection,
-                        (void **)&GlobalApplicationViewCollection))
+                    if(S_OK == ServiceProvider->QueryService(GUID_IApplicationViewCollection, GUID_IApplicationViewCollection, (void **)&GlobalApplicationViewCollection))
                     {
-                        if(S_OK == ServiceProvider->QueryService(
-                            CLSID_VirtualDesktopPinnedApps,
-                            __uuidof(IVirtualDesktopPinnedApps),
-                            (void **)&GlobalVirtualDesktopPinnedApps))
+                        if(S_OK == ServiceProvider->QueryService(GUID_VirtualDesktopPinnedApps, __uuidof(IVirtualDesktopPinnedApps), (void **)&GlobalVirtualDesktopPinnedApps))
                         {
                             Result = true;
 
                             int VirtualDesktopCount = Win32GetVirtualDesktopCount();
 
-                            char Buffer[MAX_PATH];
-                            StringCbPrintf(Buffer, MAX_PATH, "Virtual desktop count: %d\n", VirtualDesktopCount);
-                            OutputDebugString(Buffer);
+                            StringCbPrintf(GlobalTempBuffer, MAX_PATH, "Virtual desktop count: %d\n", VirtualDesktopCount);
+                            OutputDebugString(GlobalTempBuffer);
                         }
                         else
                         {
@@ -344,7 +330,7 @@ WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLine, int ShowC
     if(Win32InitVirtualDesktopNotifications())
     {
         GlobalCurrentVirtualDesktopIndex = Win32GetCurrentVirtualDesktopIndex();
-        CreateTimerQueueTimer(&GlobalTimer, 0, HideWindowCallback, 0, VIRTUAL_DESKTOP_NUMERAL_TIMEOUT, 0, WT_EXECUTEONLYONCE);
+        CreateTimerQueueTimer(&GlobalTimer, 0, Win32HideWindowCallback, 0, VIRTUAL_DESKTOP_NUMERAL_TIMEOUT, 0, WT_EXECUTEONLYONCE);
     }
     else
     {
@@ -354,7 +340,7 @@ WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLine, int ShowC
     WNDCLASSEX WindowClass = {};
     WindowClass.cbSize = sizeof(WNDCLASSEX);
     WindowClass.hInstance = Instance;
-    WindowClass.lpfnWndProc = MainWindowCallback;
+    WindowClass.lpfnWndProc = Win32MainWindowCallback;
     WindowClass.lpszClassName = "VirtualDesktopperClassName";
 
     if(RegisterClassEx(&WindowClass))
@@ -364,15 +350,16 @@ WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLine, int ShowC
         int ClientWidth = GetSystemMetrics(SM_CXFULLSCREEN);
         int ClientHeight = GetSystemMetrics(SM_CYFULLSCREEN);
 
-        char TempBuffer[MAX_PATH];
-        StringCbPrintf(TempBuffer, MAX_PATH, "Full-screen client area: %dx%d\n", ClientWidth, ClientHeight);
-        OutputDebugString(TempBuffer);
+        StringCbPrintf(GlobalTempBuffer, MAX_PATH, "Full-screen client area: %dx%d\n", ClientWidth, ClientHeight);
+        OutputDebugString(GlobalTempBuffer);
 
         GlobalWindow = CreateWindowEx(
             WS_EX_TOPMOST,
             WindowClass.lpszClassName, "Virtual Desktopper",
             WS_POPUP | WS_VISIBLE,
-            ClientWidth/2 - WindowHeight/2, ClientHeight/2 - WindowWidth/2, WindowWidth, WindowHeight,
+            (ClientWidth  / 2) - (WindowWidth  / 2),
+            (ClientHeight / 2) - (WindowHeight / 2),
+            WindowWidth, WindowHeight,
             0, 0, Instance, 0);
 
         if(GlobalWindow)
@@ -382,7 +369,7 @@ WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLine, int ShowC
                 OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
                 DEFAULT_QUALITY, DEFAULT_PITCH,
                 "Arial");
-            PinWindow(GlobalWindow);
+            Win32PinWindow(GlobalWindow);
 
             MSG Message;
             while(GetMessage(&Message, 0, 0, 0))
