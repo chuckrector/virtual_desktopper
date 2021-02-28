@@ -52,7 +52,7 @@ Win32GetVirtualDesktopCount()
     UINT Result = 1;
 
     IObjectArray *ObjectArray;
-    if(SUCCEEDED(GlobalVirtualDesktopManagerInternal->GetDesktops(&ObjectArray)))
+    if(S_OK == GlobalVirtualDesktopManagerInternal->GetDesktops(&ObjectArray))
     {
         ObjectArray->GetCount(&Result);
         ObjectArray->Release();
@@ -67,10 +67,10 @@ Win32GetVirtualDesktopIndexByID(GUID VirtualDesktopID)
     int Result = -1;
     IObjectArray *ObjectArray;
 
-    if(SUCCEEDED(GlobalVirtualDesktopManagerInternal->GetDesktops(&ObjectArray)))
+    if(S_OK == GlobalVirtualDesktopManagerInternal->GetDesktops(&ObjectArray))
     {
         UINT Count;
-        if(SUCCEEDED(ObjectArray->GetCount(&Count)))
+        if(S_OK == ObjectArray->GetCount(&Count))
         {
             for(UINT Index = 0;
                 Index < Count;
@@ -83,7 +83,7 @@ Win32GetVirtualDesktopIndexByID(GUID VirtualDesktopID)
                 }
 
                 GUID ID;
-                if(SUCCEEDED(Desktop->GetID(&ID)) && ID == VirtualDesktopID)
+                if((S_OK == Desktop->GetID(&ID)) && (ID == VirtualDesktopID))
                 {
                     Result = Index;
                     Desktop->Release();
@@ -106,7 +106,7 @@ Win32GetVirtualDesktopIndex(IVirtualDesktop *Desktop)
     int Result = -1;
     GUID ID;
 
-    if(SUCCEEDED(Desktop->GetID(&ID)))
+    if(S_OK == Desktop->GetID(&ID))
     {
         Result = Win32GetVirtualDesktopIndexByID(ID);
     }
@@ -276,26 +276,26 @@ Win32InitVirtualDesktopNotifications()
     CoCreateInstance(CLSID_ImmersiveShell, 0, CLSCTX_LOCAL_SERVER, __uuidof(IServiceProvider), (void **)&ServiceProvider);
 
     IVirtualDesktopManager *VirtualDesktopManager;
-    if(SUCCEEDED(ServiceProvider->QueryService(__uuidof(IVirtualDesktopManager), &VirtualDesktopManager)))
+    if(S_OK == ServiceProvider->QueryService(__uuidof(IVirtualDesktopManager), &VirtualDesktopManager))
     {
-        if(SUCCEEDED(ServiceProvider->QueryService(CLSID_VirtualDesktopAPI_Unknown, &GlobalVirtualDesktopManagerInternal)))
+        if(S_OK == ServiceProvider->QueryService(CLSID_VirtualDesktopAPI_Unknown, &GlobalVirtualDesktopManagerInternal))
         {
             IVirtualDesktopNotificationService *NotificationService;
-            if(SUCCEEDED(ServiceProvider->QueryService(CLSID_IVirtualNotificationService, &NotificationService)))
+            if(S_OK == ServiceProvider->QueryService(CLSID_IVirtualNotificationService, &NotificationService))
             {
                 DWORD Cookie;
                 virtual_desktop_notification *VirtualDesktopNotification = new virtual_desktop_notification();
-                if(SUCCEEDED(NotificationService->Register(VirtualDesktopNotification, &Cookie)))
+                if(S_OK == NotificationService->Register(VirtualDesktopNotification, &Cookie))
                 {
-                    if(SUCCEEDED(ServiceProvider->QueryService(
+                    if(S_OK == ServiceProvider->QueryService(
                         IID_IApplicationViewCollection,
                         IID_IApplicationViewCollection,
-                        (void **)&GlobalApplicationViewCollection)))
+                        (void **)&GlobalApplicationViewCollection))
                     {
-                        if(SUCCEEDED(ServiceProvider->QueryService(
+                        if(S_OK == ServiceProvider->QueryService(
                             CLSID_VirtualDesktopPinnedApps,
                             __uuidof(IVirtualDesktopPinnedApps),
-                            (void **)&GlobalVirtualDesktopPinnedApps)))
+                            (void **)&GlobalVirtualDesktopPinnedApps))
                         {
                             Result = true;
 
