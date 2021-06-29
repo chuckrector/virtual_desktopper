@@ -371,6 +371,11 @@ WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLine, int ShowC
                 "Arial");
             Win32PinWindow(GlobalWindow);
 
+            ANIMATIONINFO AnimationInfo;
+            AnimationInfo.cbSize = sizeof(ANIMATIONINFO);
+            AnimationInfo.iMinAnimate = 0;
+            SystemParametersInfo(SPI_SETANIMATION, sizeof(ANIMATIONINFO), &AnimationInfo, 0);
+
             MSG Message;
             while(GetMessage(&Message, 0, 0, 0))
             {
