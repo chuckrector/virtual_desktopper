@@ -354,7 +354,7 @@ WinMain(HINSTANCE Instance, HINSTANCE PrevInstance, LPSTR CommandLine, int ShowC
         OutputDebugString(GlobalTempBuffer);
 
         GlobalWindow = CreateWindowEx(
-            WS_EX_TOPMOST,
+            WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
             WindowClass.lpszClassName, "Virtual Desktopper",
             WS_POPUP | WS_VISIBLE,
             (ClientWidth  / 2) - (WindowWidth  / 2),
